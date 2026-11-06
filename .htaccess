@@ -1,0 +1,3 @@
+# Keep project files out of the public website
+RedirectMatch 404 ^/(\.claude|\.git|docs)(/.*)?$
+RedirectMatch 404 ^/(CLAUDE|README)\.md$
