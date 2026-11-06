@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Motion Galaxy</title>
+<link rel="icon" href="img/logo.png">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Customizable templates for Final Cut Pro: titles, transitions, backgrounds and effects. Sold on FxFactory.">
+<style>
+/* Layout: Apple-style product site. Sticky glass nav, starfield hero sized to content,
+   a 2-column grid of product tiles where featured products span the full row,
+   a horizontally snapping video rail, benefits, closing CTA, footer. Dark-first. */
+:root{
+  color-scheme: dark;
+  --bg:#000000;
+  --bg-alt:#0b0a10;
+  --tile:#131118;
+  --tile-hi:#1c1924;
+  --fg:#f5f5f7;
+  --muted:#a3a1ad;
+  --hair:rgba(255,255,255,.12);
+  --accent:#b98fff;
+  --accent-fill:#8b3dff;
+  --accent-fill-hi:#9b57ff;
+  --on-accent:#ffffff;
+  --nav:rgba(12,11,16,.72);
+  --menu:rgba(28,25,36,.86);
+  --shadow:0 18px 50px rgba(0,0,0,.55);
+  --glow:rgba(139,61,255,.34);
+  --play:rgba(0,0,0,.55);
+  --logo-filter:none;
+  --stars:1;
+
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ease-out: cubic-bezier(.23,1,.32,1);
+  --ease-in-out: cubic-bezier(.77,0,.175,1);
+  --radius-tile: 28px;
+  --radius-media: 18px;
+  --maxw: 1180px;
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    color-scheme: light;
+    --bg:#f5f5f7; --bg-alt:#ffffff; --tile:#ffffff; --tile-hi:#f6f5fa;
+    --fg:#1d1d1f; --muted:#6c6a74; --hair:rgba(0,0,0,.1);
+    --accent:#6d28d9; --accent-fill:#7c3aed; --accent-fill-hi:#6d28d9; --on-accent:#ffffff;
+    --nav:rgba(245,245,247,.76); --menu:rgba(255,255,255,.9); --shadow:0 18px 50px rgba(30,20,60,.18); --glow:rgba(124,58,237,.16); --play:rgba(0,0,0,.5);
+    --logo-filter:invert(1); --stars:0;
+  }
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --bg:#f5f5f7; --bg-alt:#ffffff; --tile:#ffffff; --tile-hi:#f6f5fa;
+  --fg:#1d1d1f; --muted:#6c6a74; --hair:rgba(0,0,0,.1);
+  --accent:#6d28d9; --accent-fill:#7c3aed; --accent-fill-hi:#6d28d9; --on-accent:#ffffff;
+  --nav:rgba(245,245,247,.76); --menu:rgba(255,255,255,.9); --shadow:0 18px 50px rgba(30,20,60,.18); --glow:rgba(124,58,237,.16); --play:rgba(0,0,0,.5);
+  --logo-filter:invert(1); --stars:0;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--fg);
+  font: 400 1.0625rem/1.47 var(--font);
+  letter-spacing:-.011em;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  overflow-x:hidden;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%;height:auto}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+
+.wrap{max-width:calc(var(--maxw) + 32px);margin-inline:auto;padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
+
+/* ---------- Nav (translucent material) ---------- */
+.nav{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:50;
+  background:var(--nav);
+  -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid var(--hair);
+}
+.nav .wrap{display:flex;align-items:center;gap:24px;height:52px}
+.brand{display:flex;align-items:center;flex-shrink:0}
+.brand img{height:20px;width:auto;filter:var(--logo-filter)}
+.nav-links{display:flex;gap:28px;margin-left:auto;font-size:.8125rem;color:var(--muted)}
+.nav-links a{transition:color .2s ease}
+.nav-links a:hover{color:var(--fg)}
+.nav-actions{display:flex;align-items:center;gap:10px;margin-left:8px}
+.lang{
+  font:600 .75rem/1 var(--font); letter-spacing:.04em;
+  color:var(--fg); background:transparent; border:1px solid var(--hair);
+  border-radius:999px; padding:7px 10px; cursor:pointer;
+  transition:transform .1s var(--ease-out), border-color .2s ease;
+}
+.lang:hover{border-color:var(--muted)}
+.lang:active{transform:scale(.96)}
+.lang{display:inline-flex;align-items:center;gap:5px}
+.lang svg{width:9px;height:9px;transition:transform .2s var(--ease-out)}
+.lang[aria-expanded="true"] svg{transform:rotate(180deg)}
+.lang-wrap{position:relative}
+.lang-menu{
+  position:absolute;right:0;top:calc(100% + 10px);z-index:70;min-width:190px;margin:0;padding:6px;list-style:none;
+  background:var(--menu);-webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px);
+  border:1px solid var(--hair);border-radius:14px;box-shadow:var(--shadow);transform-origin:top right;
+}
+.lang-menu:not([hidden]){animation:pop .18s var(--ease-out)}
+@keyframes pop{from{opacity:0;transform:scale(.95) translateY(-4px)}to{opacity:1;transform:none}}
+.lang-menu button{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  font:500 .875rem/1 var(--font);color:var(--fg);background:transparent;border:0;border-radius:9px;
+  padding:10px 12px;cursor:pointer;text-align:left;
+}
+.lang-menu button:hover,.lang-menu button:focus-visible{background:var(--tile-hi);outline:none}
+.lang-menu button span{font-size:.6875rem;font-weight:600;letter-spacing:.06em;color:var(--muted)}
+.lang-menu button[aria-checked="true"]{color:var(--accent);font-weight:600}
+.lang-menu button[aria-checked="true"] span{color:var(--accent)}
+:lang(ja) h1,:lang(ja) h2,:lang(ja) h3,:lang(ja) .name{letter-spacing:-.01em}
+:lang(ja) .hero h1{max-width:11em}
+:lang(ja) body{line-break:strict}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font:500 1.0625rem/1 var(--font); letter-spacing:-.01em;
+  padding:13px 22px; border-radius:999px; white-space:nowrap;
+  transition:transform .12s var(--ease-out), background-color .2s ease, color .2s ease, border-color .2s ease;
+  user-select:none; -webkit-user-select:none;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent-fill);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent-fill-hi)}
+.btn-ghost{color:var(--accent);border:1px solid currentColor}
+.btn-ghost:hover{background:color-mix(in srgb, var(--accent) 12%, transparent)}
+.btn-sm{font-size:.8125rem;padding:8px 14px}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;isolation:isolate}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-2;opacity:var(--stars)}
+.hero::after{
+  content:"";position:absolute;z-index:-1;left:50%;top:62%;width:min(1100px,140vw);aspect-ratio:2/1;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(closest-side, var(--glow), transparent 70%);
+  pointer-events:none;
+}
+.hero .wrap{padding-block:clamp(72px,11vw,140px) clamp(64px,9vw,112px);text-align:center;display:grid;justify-items:center;gap:22px}
+.eyebrow{font-size:clamp(1rem,1.6vw,1.3125rem);font-weight:600;color:var(--accent);letter-spacing:-.01em}
+.hero h1{
+  font-size:clamp(2.75rem,7.4vw,5.75rem); line-height:1.03; letter-spacing:-.04em; font-weight:700;
+  max-width:13ch;
+}
+.lead{font-size:clamp(1.125rem,1.9vw,1.4375rem);line-height:1.4;color:var(--muted);max-width:40ch;letter-spacing:-.016em}
+.hero-ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:6px}
+.facts{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
+  margin-top:clamp(36px,6vw,64px);width:100%;max-width:760px;
+}
+.fact{padding:18px 12px;border-top:1px solid var(--hair);text-align:center;min-width:0}
+.fact b{display:block;font-size:clamp(1.5rem,3vw,2.25rem);font-weight:700;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
+.fact span{display:block;font-size:.875rem;color:var(--muted);margin-top:4px}
+
+/* Hero entrance — one orchestrated moment, short stagger */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hero .in{animation:rise .7s var(--ease-out) both}
+.hero .in:nth-child(2){animation-delay:.06s}
+.hero .in:nth-child(3){animation-delay:.12s}
+.hero .in:nth-child(4){animation-delay:.18s}
+.hero .in:nth-child(5){animation-delay:.26s}
+
+/* ---------- Section heads ---------- */
+section{scroll-margin-top:64px}
+.section{padding-block:clamp(72px,10vw,128px)}
+.section-alt{background:var(--bg-alt)}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;margin-bottom:clamp(28px,4vw,48px)}
+.head h2{font-size:clamp(2rem,4.6vw,3.5rem);line-height:1.06;letter-spacing:-.03em;font-weight:700}
+.head p{color:var(--muted);font-size:clamp(1.0625rem,1.6vw,1.25rem);max-width:44ch;margin-top:10px}
+
+/* ---------- Product tiles ---------- */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tile{
+  background:var(--tile); border-radius:var(--radius-tile); overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:clamp(36px,5vw,56px) clamp(16px,2.4vw,28px) clamp(16px,2.4vw,28px);
+  min-width:0;
+}
+.tile.feature{grid-column:1 / -1}
+.tile .name{font-size:clamp(1.75rem,3.4vw,2.5rem);font-weight:700;letter-spacing:-.03em;line-height:1.08}
+.tile.feature .name{font-size:clamp(2.25rem,5vw,3.5rem)}
+.tile .headline{font-size:clamp(1.125rem,1.9vw,1.5rem);font-weight:500;letter-spacing:-.018em;line-height:1.25;margin-top:6px}
+.tile .desc{color:var(--muted);font-size:1rem;margin-top:10px;max-width:42ch}
+.tile .ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:20px}
+.tile .ctas .btn{font-size:.9375rem;padding:11px 18px}
+.media{
+  position:relative;display:block;width:100%;margin-top:clamp(24px,3.4vw,40px);
+  border-radius:var(--radius-media);overflow:hidden;aspect-ratio:16/9;background:var(--tile-hi);
+}
+.tile.feature .media{max-width:980px}
+.media img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease-out)}
+.play{
+  position:absolute;left:14px;bottom:14px;display:flex;align-items:center;gap:8px;
+  padding:8px 14px 8px 10px;border-radius:999px;
+  background:var(--play);color:#fff;font-size:.8125rem;font-weight:600;
+  -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);
+  transition:transform .3s var(--ease-out), background-color .2s ease;
+}
+.play svg{width:18px;height:18px}
+@media (hover:hover) and (pointer:fine){
+  .media:hover img{transform:scale(1.035)}
+  .media:hover .play{transform:scale(1.04)}
+}
+.media:active .play{transform:scale(.96)}
+
+/* ---------- Video rail ---------- */
+.rail-wrap{position:relative}
+.rail{
+  display:grid;grid-auto-flow:column;grid-auto-columns:min(80%,360px);gap:16px;
+  overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;
+  --pad-l:max(var(--gutter-l), calc((100% - var(--maxw)) / 2));
+  --pad-r:max(var(--gutter-r), calc((100% - var(--maxw)) / 2));
+  padding-left:var(--pad-l);padding-right:var(--pad-r);scroll-padding-left:var(--pad-l);
+  padding-bottom:8px;scrollbar-width:none;
+}
+.rail::-webkit-scrollbar{display:none}
+.vcard{scroll-snap-align:start;display:flex;flex-direction:column;gap:12px;min-width:0}
+.vcard .media{margin-top:0;border-radius:16px}
+.vcard h3{font-size:1.0625rem;font-weight:600;letter-spacing:-.015em}
+.vcard p{font-size:.875rem;color:var(--muted)}
+.rail-nav{display:flex;gap:10px}
+.chan{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:var(--accent);font-weight:500;font-size:1.0625rem}
+.chan:hover{text-decoration:underline}
+.chan svg{width:20px;height:20px}
+.cta-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:6px}
+.contact{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;margin-top:22px;padding-top:26px;border-top:1px solid var(--hair);width:100%;max-width:560px}
+.contact span{color:var(--muted)}
+.contact a{color:var(--fg);font-weight:600;user-select:all;-webkit-user-select:all;overflow-wrap:anywhere}
+.contact a:hover{color:var(--accent)}
+.copy{font:600 .75rem/1 var(--font);color:var(--fg);background:var(--tile-hi);border:1px solid var(--hair);border-radius:999px;padding:7px 12px;cursor:pointer;transition:transform .1s var(--ease-out)}
+.copy:active{transform:scale(.96)}
+.foot-mail{display:inline-block;margin-top:10px;color:var(--fg);overflow-wrap:anywhere}
+.arrow{
+  width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;
+  background:var(--tile-hi);color:var(--fg);display:grid;place-items:center;
+  transition:transform .12s var(--ease-out), opacity .2s ease;
+}
+.arrow:active{transform:scale(.94)}
+.arrow:disabled{opacity:.35;cursor:default}
+.arrow svg{width:16px;height:16px}
+
+/* ---------- Benefits ---------- */
+.benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.benefit{background:var(--tile);border-radius:var(--radius-tile);padding:clamp(28px,4vw,44px);min-width:0;display:grid;gap:10px;align-content:start}
+.benefit .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--accent);background:color-mix(in srgb, var(--accent) 14%, transparent)}
+.benefit .ico svg{width:22px;height:22px}
+.benefit h3{font-size:clamp(1.25rem,2.2vw,1.625rem);letter-spacing:-.022em;line-height:1.2;margin-top:8px}
+.benefit p{color:var(--muted);max-width:46ch}
+
+/* ---------- CTA band ---------- */
+.cta{text-align:center}
+.cta .wrap{display:grid;justify-items:center;gap:18px}
+.cta h2{font-size:clamp(2rem,5vw,3.75rem);line-height:1.05;letter-spacing:-.035em;font-weight:700;max-width:16ch}
+.cta p{color:var(--muted);font-size:clamp(1.0625rem,1.6vw,1.25rem);max-width:46ch}
+
+/* ---------- Footer ---------- */
+footer{border-top:1px solid var(--hair);font-size:.8125rem;color:var(--muted)}
+footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
+.foot-cols{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:28px}
+.foot-cols h4{margin:0 0 10px;font-size:.8125rem;color:var(--fg);font-weight:600}
+.foot-cols ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.foot-cols a:hover{color:var(--fg);text-decoration:underline}
+.foot-brand img{height:18px;width:auto;filter:var(--logo-filter);margin-bottom:12px}
+.legal{border-top:1px solid var(--hair);padding-top:18px;display:flex;flex-wrap:wrap;gap:6px 24px;justify-content:space-between}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 760px){
+  .nav-links{display:none}
+  .nav-actions{margin-left:auto}
+  .grid,.benefits{grid-template-columns:minmax(0,1fr)}
+  .tile{--radius-tile:22px}
+  .foot-cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .foot-brand{grid-column:1 / -1}
+  .head .rail-nav{display:none}
+}
+@media (max-width: 420px){
+  .facts{grid-template-columns:minmax(0,1fr)}
+  .fact{padding:12px}
+  .hero-ctas .btn{flex:1 1 100%}
+}
+
+/* ---------- Accessibility preferences ---------- */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .hero .in{animation:none}
+  .lang-menu:not([hidden]){animation:none}
+  *,*::before,*::after{transition-duration:.01ms!important}
+  .media:hover img{transform:none}
+}
+@media (prefers-reduced-transparency: reduce){
+  .nav{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .play{background:#000;-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+@media (prefers-contrast: more){
+  :root{--muted:var(--fg);--hair:var(--fg)}
+}
+</style>
+
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Motion Galaxy"><img src="img/logo.png" alt="Motion Galaxy" width="805" height="138"></a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#produtos" data-i18n="nav.products">Products</a>
+      <a href="#videos" data-i18n="nav.videos">Videos</a>
+      <a href="#vantagens" data-i18n="nav.why">Why us</a>
+      <a href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener">YouTube</a>
+      <a href="#contato" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <div class="lang-wrap">
+        <button class="lang" id="lang-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="lang-menu" aria-label="Language: English"><span id="lang-code">EN</span><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <ul class="lang-menu" id="lang-menu" role="menu" hidden></ul>
+      </div>
+      <a class="btn btn-primary btn-sm" href="https://fxfactory.com/search/?keywords=galaxy" target="_blank" rel="noopener" data-i18n="nav.buy">Buy</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="hero-title">
+    <canvas id="stars" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <p class="eyebrow in" data-i18n="hero.eyebrow">Templates for Final Cut Pro</p>
+      <h1 id="hero-title" class="in" data-i18n="hero.title">Your videos, in another orbit.</h1>
+      <p class="lead in" data-i18n="hero.lead">Customizable titles, transitions, backgrounds and effects. Drop them on the timeline, adjust colors and fonts, and deliver in minutes.</p>
+      <div class="hero-ctas in">
+        <a class="btn btn-primary" href="#produtos" data-i18n="hero.cta1">See the products</a>
+        <a class="btn btn-ghost" href="#videos"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 2.5v11l9-5.5z"/></svg><span data-i18n="hero.cta2">Watch the demos</span></a>
+      </div>
+      <div class="facts in">
+        <div class="fact"><b>8</b><span data-i18n="fact.1">template packs</span></div>
+        <div class="fact"><b>100</b><span data-i18n="fact.2">titles in Universal Titles</span></div>
+        <div class="fact"><b>FxFactory</b><span data-i18n="fact.3">purchase and install</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="produtos" class="section" aria-labelledby="products-title">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <h2 id="products-title" data-i18n="products.title">The products.</h2>
+          <p data-i18n="products.sub">Every pack has a demo video and is sold on FxFactory.</p>
+        </div>
+      </div>
+      <div class="grid" id="product-grid"></div>
+    </div>
+  </section>
+
+  <section id="videos" class="section section-alt" aria-labelledby="videos-title">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <h2 id="videos-title" data-i18n="videos.title">See them in action.</h2>
+          <p data-i18n="videos.sub">The demo for every pack, on YouTube.</p>
+          <a class="chan" href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9v6l5-3z" fill="var(--bg-alt)"/></svg><span data-i18n="videos.channel">Visit the @motion-galaxy channel</span> ›</a>
+        </div>
+        <div class="rail-nav">
+          <button class="arrow" id="rail-prev" type="button" aria-label="Previous"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M10 3 5 8l5 5"/></svg></button>
+          <button class="arrow" id="rail-next" type="button" aria-label="Next"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 3 5 5-5 5"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="rail-wrap"><div class="rail" id="rail" tabindex="0" aria-label="Videos"></div></div>
+  </section>
+
+  <section id="vantagens" class="section" aria-labelledby="why-title">
+    <div class="wrap">
+      <div class="head"><div><h2 id="why-title" data-i18n="why.title">Why Motion Galaxy.</h2></div></div>
+      <div class="benefits">
+        <article class="benefit">
+          <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h3 data-i18n="why.1.t">Save time and energy</h3>
+          <p data-i18n="why.1.d">Say goodbye to long hours of editing. Create professional videos in minutes and focus on what really matters: telling your story.</p>
+        </article>
+        <article class="benefit">
+          <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+          <h3 data-i18n="why.2.t">Unlimited customization</h3>
+          <p data-i18n="why.2.d">Adjust every element to match your vision, from fonts and colors to transitions and effects. Whatever your message, the template adapts to it.</p>
+        </article>
+        <article class="benefit">
+          <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
+          <h3 data-i18n="why.3.t">A strong personal brand</h3>
+          <p data-i18n="why.3.d">Add your logo, color scheme and visual elements so your identity shines in every frame.</p>
+        </article>
+        <article class="benefit">
+          <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg></div>
+          <h3 data-i18n="why.4.t">Infinite inspiration</h3>
+          <p data-i18n="why.4.d">A growing library of professionally made templates. From ads to wedding invitations, there is one for every project.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="contato" class="section section-alt cta" aria-labelledby="cta-title">
+    <div class="wrap">
+      <h2 id="cta-title" data-i18n="cta.title">The full collection is on FxFactory.</h2>
+      <p data-i18n="cta.sub">Buy and install through FxFactory, the plug-in store for Final Cut Pro, Motion and Premiere Pro.</p>
+      <div class="cta-btns">
+        <a class="btn btn-primary" href="https://fxfactory.com/search/?keywords=galaxy" target="_blank" rel="noopener" data-i18n="cta.btn">See all on FxFactory</a>
+        <a class="btn btn-ghost" href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener" data-i18n="cta.channel">Follow on YouTube</a>
+      </div>
+      <div class="contact">
+        <span data-i18n="contact.label">Get in touch:</span>
+        <a href="mailto:motiongalaxy.templates@gmail.com">motiongalaxy.templates@gmail.com</a>
+        <button class="copy" id="copy-mail" type="button" data-i18n="contact.copy">Copy</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-cols">
+      <div class="foot-brand">
+        <img src="img/logo.png" alt="Motion Galaxy" width="805" height="138">
+        <p data-i18n="foot.tag">Motion Galaxy, your key to innovation.</p>
+        <a class="foot-mail" href="mailto:motiongalaxy.templates@gmail.com">motiongalaxy.templates@gmail.com</a>
+      </div>
+      <div>
+        <h4 data-i18n="foot.buy">Buy on FxFactory</h4>
+        <ul id="foot-buy"></ul>
+      </div>
+      <div>
+        <h4 data-i18n="foot.watch">Watch on YouTube</h4>
+        <ul id="foot-watch"></ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span data-i18n="foot.copy">© 2026 Motion Galaxy. Creative director: Tiago Pacianotto.</span>
+      <span data-i18n="foot.tm">Final Cut Pro and Motion are trademarks of Apple Inc.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const PRODUCTS = [
+    {id:'galactic-backdrops', name:'Galactic Backdrops', yt:'964xpDUzNmA', fx:'galacticbackdrops', feature:true,
+      pt:{h:'Leve sua edição para o espaço.', d:'Títulos, fundos e efeitos com tema de ficção científica.'},
+      en:{h:'Take your edit to outer space.', d:'Sci-fi themed titles, backgrounds and effects.'}},
+    {id:'wedding-tools', name:'Wedding Tools', yt:'9xyAmz59ziU', fx:'weddingtools',
+      pt:{h:'Para o dia mais importante.', d:'Slides, efeitos, títulos e convites para vídeos de casamento.'},
+      en:{h:'For the day that matters most.', d:'Custom slides, effects, titles and invitations for wedding videos.'}},
+    {id:'soccer-tools', name:'Soccer Tools', yt:'oX5Egbn9Yp0', fx:'soccertools',
+      pt:{h:'Clima de final de campeonato.', d:'Toda a energia do futebol nos seus vídeos.'},
+      en:{h:'Championship energy.', d:'Capture the vibrant energy of soccer.'}},
+    {id:'universal-titles', name:'Universal Titles', yt:'ph8VJp3widI', fx:'universaltitles', feature:true,
+      pt:{h:'100 títulos animados, prontos para usar.', d:'Leve seus projetos a outro nível com títulos para qualquer estilo.'},
+      en:{h:'100 animated titles, ready to use.', d:'Take your projects to the next level with titles for any style.'}},
+    {id:'colorful-transitions', name:'Colorful Transitions', yt:'yzL_EV8RrfQ', fx:'colorfultransitions',
+      pt:{h:'Cortes com personalidade.', d:'Transições coloridas com um toque divertido.'},
+      en:{h:'Cuts with personality.', d:'Transitions with a playful character.'}},
+    {id:'whiteboard-universe', name:'Whiteboard Universe', yt:'Rxf9ALdB6ao', fx:'whiteboarduniverse',
+      pt:{h:'Explique qualquer ideia desenhando.', d:'Crie animações no estilo quadro branco.'},
+      en:{h:'Explain any idea by drawing it.', d:'Build whiteboard-style animations.'}},
+    {id:'essential-callouts', name:'Essential Callouts', yt:'dbORt3hlm7U', fx:'essentialcallouts',
+      pt:{h:'Aponte o que importa.', d:'Destaque informações importantes com chamadas dinâmicas.'},
+      en:{h:'Point to what matters.', d:'Highlight important information with dynamic callouts.'}},
+    {id:'cosmo-slice', name:'Cosmo Slice', yt:'sqa3TqQFWWQ', fx:'cosmoslice',
+      pt:{h:'Várias cenas. Uma só tela.', d:'Layouts de tela dividida fáceis de usar.'},
+      en:{h:'Many shots. One screen.', d:'User-friendly splitscreen layout templates.'}}
+  ];
+
+  const T = {
+    pt:{
+      'nav.products':'Produtos','nav.videos':'Vídeos','nav.why':'Vantagens','nav.buy':'Comprar',
+      'hero.eyebrow':'Templates para Final Cut Pro','hero.title':'Seus vídeos em outra órbita.',
+      'hero.lead':'Títulos, transições, fundos e efeitos personalizáveis. Arraste para a timeline, ajuste cores e fontes, e entregue em minutos.',
+      'hero.cta1':'Ver produtos','hero.cta2':'Assistir às demos',
+      'fact.1':'pacotes de templates','fact.2':'títulos no Universal Titles','fact.3':'compra e instalação',
+      'products.title':'Os produtos.','products.sub':'Cada pacote tem um vídeo de demonstração e é vendido na FxFactory.',
+      'videos.title':'Veja em ação.','videos.sub':'As demonstrações de cada pacote no YouTube.',
+      'why.title':'Por que Motion Galaxy.',
+      'why.1.t':'Economize tempo e energia','why.1.d':'Chega de horas de edição. Com os templates você cria vídeos profissionais em minutos e se concentra no que importa: contar sua história.',
+      'why.2.t':'Personalização sem limites','why.2.d':'Ajuste cada elemento à sua visão: fontes, cores, transições e efeitos. Qualquer que seja a mensagem, o template se adapta a ela.',
+      'why.3.t':'Uma marca pessoal forte','why.3.d':'Insira seu logo, sua paleta de cores e seus elementos visuais para que a sua identidade apareça em cada quadro.',
+      'why.4.t':'Inspiração sem fim','why.4.d':'Uma biblioteca em expansão, feita por profissionais. De anúncios a convites de casamento, há um template para cada projeto.',
+      'cta.title':'A coleção completa está na FxFactory.','cta.sub':'Compre e instale pela FxFactory, a loja de plug-ins para Final Cut Pro, Motion e Premiere Pro.','cta.btn':'Ver todos na FxFactory','nav.contact':'Contato','contact.label':'Fale com a gente:','contact.copy':'Copiar',copied:'Copiado','cta.channel':'Seguir no YouTube','videos.channel':'Ver o canal @motion-galaxy','foot.channel':'Canal @motion-galaxy',
+      'foot.tag':'Motion Galaxy, sua chave para a inovação.','foot.buy':'Comprar na FxFactory','foot.watch':'Assistir no YouTube',
+      'foot.copy':'© 2026 Motion Galaxy. Diretor criativo: Tiago Pacianotto.','foot.tm':'Final Cut Pro e Motion são marcas da Apple Inc.',
+      buy:'Comprar na FxFactory', watch:'Assistir ao vídeo', play:'Assistir', demo:'Demonstração no YouTube',
+      prev:'Anterior', next:'Próximo', langLabel:'Idioma', sections:'Seções', videos:'Vídeos'
+    },
+    en:{
+      'nav.products':'Products','nav.videos':'Videos','nav.why':'Why us','nav.buy':'Buy',
+      'hero.eyebrow':'Templates for Final Cut Pro','hero.title':'Your videos, in another orbit.',
+      'hero.lead':'Customizable titles, transitions, backgrounds and effects. Drop them on the timeline, adjust colors and fonts, and deliver in minutes.',
+      'hero.cta1':'See the products','hero.cta2':'Watch the demos',
+      'fact.1':'template packs','fact.2':'titles in Universal Titles','fact.3':'purchase and install',
+      'products.title':'The products.','products.sub':'Every pack has a demo video and is sold on FxFactory.',
+      'videos.title':'See them in action.','videos.sub':'The demo for every pack, on YouTube.',
+      'why.title':'Why Motion Galaxy.',
+      'why.1.t':'Save time and energy','why.1.d':'Say goodbye to long hours of editing. Create professional videos in minutes and focus on what really matters: telling your story.',
+      'why.2.t':'Unlimited customization','why.2.d':'Adjust every element to match your vision, from fonts and colors to transitions and effects. Whatever your message, the template adapts to it.',
+      'why.3.t':'A strong personal brand','why.3.d':'Add your logo, color scheme and visual elements so your identity shines in every frame.',
+      'why.4.t':'Infinite inspiration','why.4.d':'A growing library of professionally made templates. From ads to wedding invitations, there is one for every project.',
+      'cta.title':'The full collection is on FxFactory.','cta.sub':'Buy and install through FxFactory, the plug-in store for Final Cut Pro, Motion and Premiere Pro.','cta.btn':'See all on FxFactory','nav.contact':'Contact','contact.label':'Get in touch:','contact.copy':'Copy',copied:'Copied','cta.channel':'Follow on YouTube','videos.channel':'Visit the @motion-galaxy channel','foot.channel':'@motion-galaxy channel',
+      'foot.tag':'Motion Galaxy, your key to innovation.','foot.buy':'Buy on FxFactory','foot.watch':'Watch on YouTube',
+      'foot.copy':'© 2026 Motion Galaxy. Creative director: Tiago Pacianotto.','foot.tm':'Final Cut Pro and Motion are trademarks of Apple Inc.',
+      buy:'Buy on FxFactory', watch:'Watch the video', play:'Watch', demo:'Demo on YouTube',
+      prev:'Previous', next:'Next', langLabel:'Language', sections:'Sections', videos:'Videos'
+    },
+    es:{
+      'nav.products':'Productos','nav.videos':'Vídeos','nav.why':'Ventajas','nav.buy':'Comprar','nav.contact':'Contacto',
+      'hero.eyebrow':'Plantillas para Final Cut Pro','hero.title':'Tus vídeos, en otra órbita.',
+      'hero.lead':'Títulos, transiciones, fondos y efectos personalizables. Arrástralos a la línea de tiempo, ajusta colores y fuentes, y entrega en minutos.',
+      'hero.cta1':'Ver productos','hero.cta2':'Ver las demos',
+      'fact.1':'paquetes de plantillas','fact.2':'títulos en Universal Titles','fact.3':'compra e instalación',
+      'products.title':'Los productos.','products.sub':'Cada paquete tiene un vídeo de demostración y se vende en FxFactory.',
+      'videos.title':'Míralos en acción.','videos.sub':'Las demostraciones de cada paquete en YouTube.','videos.channel':'Visita el canal @motion-galaxy',
+      'why.title':'Por qué Motion Galaxy.',
+      'why.1.t':'Ahorra tiempo y energía','why.1.d':'Olvídate de largas horas de edición. Crea vídeos profesionales en minutos y céntrate en lo que importa: contar tu historia.',
+      'why.2.t':'Personalización sin límites','why.2.d':'Ajusta cada elemento a tu visión: fuentes, colores, transiciones y efectos. Sea cual sea tu mensaje, la plantilla se adapta.',
+      'why.3.t':'Una marca personal fuerte','why.3.d':'Añade tu logo, tu paleta de colores y tus elementos visuales para que tu identidad brille en cada fotograma.',
+      'why.4.t':'Inspiración infinita','why.4.d':'Una biblioteca en crecimiento, creada por profesionales. De anuncios a invitaciones de boda, hay una plantilla para cada proyecto.',
+      'cta.title':'La colección completa está en FxFactory.','cta.sub':'Compra e instala con FxFactory, la tienda de plug-ins para Final Cut Pro, Motion y Premiere Pro.','cta.btn':'Ver todo en FxFactory','cta.channel':'Seguir en YouTube',
+      'contact.label':'Escríbenos:','contact.copy':'Copiar',copied:'Copiado',
+      'foot.tag':'Motion Galaxy, tu llave a la innovación.','foot.buy':'Comprar en FxFactory','foot.watch':'Ver en YouTube','foot.channel':'Canal @motion-galaxy',
+      'foot.copy':'© 2026 Motion Galaxy. Director creativo: Tiago Pacianotto.','foot.tm':'Final Cut Pro y Motion son marcas de Apple Inc.',
+      buy:'Comprar en FxFactory', watch:'Ver el vídeo', play:'Ver', demo:'Demostración en YouTube',
+      prev:'Anterior', next:'Siguiente', langLabel:'Idioma', sections:'Secciones', videos:'Vídeos'
+    },
+    fr:{
+      'nav.products':'Produits','nav.videos':'Vidéos','nav.why':'Avantages','nav.buy':'Acheter','nav.contact':'Contact',
+      'hero.eyebrow':'Modèles pour Final Cut Pro','hero.title':'Vos vidéos, sur une autre orbite.',
+      'hero.lead':'Titres, transitions, arrière-plans et effets personnalisables. Glissez-les dans la timeline, ajustez couleurs et polices, et livrez en quelques minutes.',
+      'hero.cta1':'Voir les produits','hero.cta2':'Voir les démos',
+      'fact.1':'packs de modèles','fact.2':'titres dans Universal Titles','fact.3':'achat et installation',
+      'products.title':'Les produits.','products.sub':'Chaque pack a sa vidéo de démonstration et est vendu sur FxFactory.',
+      'videos.title':'Voyez-les en action.','videos.sub':'Les démonstrations de chaque pack sur YouTube.','videos.channel':'Voir la chaîne @motion-galaxy',
+      'why.title':'Pourquoi Motion Galaxy.',
+      'why.1.t':'Gagnez du temps et de l’énergie','why.1.d':'Fini les longues heures de montage. Créez des vidéos professionnelles en quelques minutes et concentrez-vous sur l’essentiel : raconter votre histoire.',
+      'why.2.t':'Une personnalisation sans limites','why.2.d':'Adaptez chaque élément à votre vision : polices, couleurs, transitions et effets. Quel que soit votre message, le modèle s’adapte.',
+      'why.3.t':'Une marque personnelle forte','why.3.d':'Ajoutez votre logo, vos couleurs et vos éléments visuels pour que votre identité brille dans chaque plan.',
+      'why.4.t':'Une inspiration infinie','why.4.d':'Une bibliothèque qui s’agrandit, créée par des professionnels. Des publicités aux faire-part de mariage, il y a un modèle pour chaque projet.',
+      'cta.title':'Toute la collection est sur FxFactory.','cta.sub':'Achetez et installez avec FxFactory, la boutique de plug-ins pour Final Cut Pro, Motion et Premiere Pro.','cta.btn':'Tout voir sur FxFactory','cta.channel':'Suivre sur YouTube',
+      'contact.label':'Écrivez-nous :','contact.copy':'Copier',copied:'Copié',
+      'foot.tag':'Motion Galaxy, votre clé de l’innovation.','foot.buy':'Acheter sur FxFactory','foot.watch':'Regarder sur YouTube','foot.channel':'Chaîne @motion-galaxy',
+      'foot.copy':'© 2026 Motion Galaxy. Directeur de création : Tiago Pacianotto.','foot.tm':'Final Cut Pro et Motion sont des marques d’Apple Inc.',
+      buy:'Acheter sur FxFactory', watch:'Voir la vidéo', play:'Regarder', demo:'Démo sur YouTube',
+      prev:'Précédent', next:'Suivant', langLabel:'Langue', sections:'Sections', videos:'Vidéos'
+    },
+    de:{
+      'nav.products':'Produkte','nav.videos':'Videos','nav.why':'Vorteile','nav.buy':'Kaufen','nav.contact':'Kontakt',
+      'hero.eyebrow':'Vorlagen für Final Cut Pro','hero.title':'Deine Videos in einer neuen Umlaufbahn.',
+      'hero.lead':'Anpassbare Titel, Übergänge, Hintergründe und Effekte. In die Timeline ziehen, Farben und Schriften anpassen und in Minuten fertig sein.',
+      'hero.cta1':'Produkte ansehen','hero.cta2':'Demos ansehen',
+      'fact.1':'Vorlagenpakete','fact.2':'Titel in Universal Titles','fact.3':'Kauf und Installation',
+      'products.title':'Die Produkte.','products.sub':'Zu jedem Paket gibt es ein Demovideo. Erhältlich bei FxFactory.',
+      'videos.title':'In Aktion erleben.','videos.sub':'Die Demos aller Pakete auf YouTube.','videos.channel':'Zum Kanal @motion-galaxy',
+      'why.title':'Warum Motion Galaxy.',
+      'why.1.t':'Spare Zeit und Energie','why.1.d':'Schluss mit stundenlangem Schneiden. Erstelle professionelle Videos in Minuten und konzentriere dich auf das Wesentliche: deine Geschichte.',
+      'why.2.t':'Grenzenlos anpassbar','why.2.d':'Passe jedes Element an deine Vorstellung an, von Schriften und Farben bis zu Übergängen und Effekten. Die Vorlage passt sich deiner Botschaft an.',
+      'why.3.t':'Eine starke persönliche Marke','why.3.d':'Füge dein Logo, deine Farben und deine visuellen Elemente ein, damit deine Identität in jedem Frame sichtbar ist.',
+      'why.4.t':'Unendliche Inspiration','why.4.d':'Eine wachsende Bibliothek professioneller Vorlagen. Von Werbespots bis zu Hochzeitseinladungen ist für jedes Projekt etwas dabei.',
+      'cta.title':'Die ganze Kollektion gibt es bei FxFactory.','cta.sub':'Kaufen und installieren über FxFactory, den Plug-in-Store für Final Cut Pro, Motion und Premiere Pro.','cta.btn':'Alle bei FxFactory ansehen','cta.channel':'Auf YouTube folgen',
+      'contact.label':'Schreib uns:','contact.copy':'Kopieren',copied:'Kopiert',
+      'foot.tag':'Motion Galaxy, dein Schlüssel zur Innovation.','foot.buy':'Bei FxFactory kaufen','foot.watch':'Auf YouTube ansehen','foot.channel':'Kanal @motion-galaxy',
+      'foot.copy':'© 2026 Motion Galaxy. Creative Director: Tiago Pacianotto.','foot.tm':'Final Cut Pro und Motion sind Marken der Apple Inc.',
+      buy:'Bei FxFactory kaufen', watch:'Video ansehen', play:'Ansehen', demo:'Demo auf YouTube',
+      prev:'Zurück', next:'Weiter', langLabel:'Sprache', sections:'Bereiche', videos:'Videos'
+    },
+    it:{
+      'nav.products':'Prodotti','nav.videos':'Video','nav.why':'Vantaggi','nav.buy':'Acquista','nav.contact':'Contatti',
+      'hero.eyebrow':'Template per Final Cut Pro','hero.title':'I tuoi video, in un’altra orbita.',
+      'hero.lead':'Titoli, transizioni, sfondi ed effetti personalizzabili. Trascinali nella timeline, regola colori e font e consegna in pochi minuti.',
+      'hero.cta1':'Scopri i prodotti','hero.cta2':'Guarda le demo',
+      'fact.1':'pacchetti di template','fact.2':'titoli in Universal Titles','fact.3':'acquisto e installazione',
+      'products.title':'I prodotti.','products.sub':'Ogni pacchetto ha un video dimostrativo ed è venduto su FxFactory.',
+      'videos.title':'Guardali in azione.','videos.sub':'Le demo di ogni pacchetto su YouTube.','videos.channel':'Visita il canale @motion-galaxy',
+      'why.title':'Perché Motion Galaxy.',
+      'why.1.t':'Risparmia tempo ed energia','why.1.d':'Basta lunghe ore di montaggio. Crea video professionali in pochi minuti e concentrati su ciò che conta: raccontare la tua storia.',
+      'why.2.t':'Personalizzazione senza limiti','why.2.d':'Adatta ogni elemento alla tua visione: font, colori, transizioni ed effetti. Qualunque sia il messaggio, il template si adatta.',
+      'why.3.t':'Un brand personale forte','why.3.d':'Inserisci il tuo logo, la tua palette di colori e i tuoi elementi visivi perché la tua identità risalti in ogni fotogramma.',
+      'why.4.t':'Ispirazione infinita','why.4.d':'Una libreria in continua crescita, creata da professionisti. Dalle pubblicità agli inviti di nozze, c’è un template per ogni progetto.',
+      'cta.title':'La collezione completa è su FxFactory.','cta.sub':'Acquista e installa con FxFactory, lo store di plug-in per Final Cut Pro, Motion e Premiere Pro.','cta.btn':'Vedi tutto su FxFactory','cta.channel':'Seguici su YouTube',
+      'contact.label':'Scrivici:','contact.copy':'Copia',copied:'Copiato',
+      'foot.tag':'Motion Galaxy, la tua chiave per l’innovazione.','foot.buy':'Acquista su FxFactory','foot.watch':'Guarda su YouTube','foot.channel':'Canale @motion-galaxy',
+      'foot.copy':'© 2026 Motion Galaxy. Direttore creativo: Tiago Pacianotto.','foot.tm':'Final Cut Pro e Motion sono marchi di Apple Inc.',
+      buy:'Acquista su FxFactory', watch:'Guarda il video', play:'Guarda', demo:'Demo su YouTube',
+      prev:'Precedente', next:'Successivo', langLabel:'Lingua', sections:'Sezioni', videos:'Video'
+    },
+    ja:{
+      'nav.products':'製品','nav.videos':'ビデオ','nav.why':'特長','nav.buy':'購入','nav.contact':'お問い合わせ',
+      'hero.eyebrow':'Final Cut Pro用テンプレート','hero.title':'あなたの映像を、新しい軌道へ。',
+      'hero.lead':'カスタマイズできるタイトル、トランジション、背景、エフェクト。タイムラインにドラッグして、色やフォントを調整すれば、数分で仕上がります。',
+      'hero.cta1':'製品を見る','hero.cta2':'デモを見る',
+      'fact.1':'テンプレートパック','fact.2':'Universal Titlesのタイトル数','fact.3':'購入とインストール',
+      'products.title':'製品ラインナップ。','products.sub':'すべてのパックにデモビデオがあり、FxFactoryで販売しています。',
+      'videos.title':'実際の動きを見る。','videos.sub':'各パックのデモをYouTubeで公開しています。','videos.channel':'@motion-galaxy チャンネルを見る',
+      'why.title':'Motion Galaxyを選ぶ理由。',
+      'why.1.t':'時間と手間を節約','why.1.d':'長時間の編集作業はもう必要ありません。数分でプロ品質の映像を作り、ストーリーを伝えることに集中できます。',
+      'why.2.t':'自由自在なカスタマイズ','why.2.d':'フォントや色からトランジション、エフェクトまで、すべての要素をイメージ通りに調整できます。',
+      'why.3.t':'ブランドを印象づける','why.3.d':'ロゴやカラー、ビジュアル要素を入れて、すべてのフレームにあなたらしさを表現できます。',
+      'why.4.t':'尽きないインスピレーション','why.4.d':'プロが制作したテンプレートライブラリは拡大中。広告から結婚式の招待状まで、あらゆるプロジェクトに対応します。',
+      'cta.title':'すべての製品はFxFactoryで。','cta.sub':'Final Cut Pro、Motion、Premiere Pro向けのプラグインストア、FxFactoryで購入・インストールできます。','cta.btn':'FxFactoryですべて見る','cta.channel':'YouTubeでフォロー',
+      'contact.label':'お問い合わせ：','contact.copy':'コピー',copied:'コピーしました',
+      'foot.tag':'Motion Galaxy、イノベーションへの鍵。','foot.buy':'FxFactoryで購入','foot.watch':'YouTubeで見る','foot.channel':'@motion-galaxy チャンネル',
+      'foot.copy':'© 2026 Motion Galaxy. クリエイティブディレクター：Tiago Pacianotto','foot.tm':'Final Cut ProおよびMotionはApple Inc.の商標です。',
+      buy:'FxFactoryで購入', watch:'ビデオを見る', play:'再生', demo:'YouTubeのデモ',
+      prev:'前へ', next:'次へ', langLabel:'言語', sections:'セクション', videos:'ビデオ'
+    }
+  };
+
+  const LANGS = [
+    {code:'pt', short:'PT', name:'Português', html:'pt-BR'},
+    {code:'en', short:'EN', name:'English', html:'en'},
+    {code:'es', short:'ES', name:'Español', html:'es'},
+    {code:'fr', short:'FR', name:'Français', html:'fr'},
+    {code:'de', short:'DE', name:'Deutsch', html:'de'},
+    {code:'it', short:'IT', name:'Italiano', html:'it'},
+    {code:'ja', short:'JA', name:'日本語', html:'ja'}
+  ];
+
+  /* Product copy for the added languages: [headline, description] */
+  const PX = {
+    es:{'galactic-backdrops':['Lleva tu edición al espacio.','Títulos, fondos y efectos de ciencia ficción.'],
+        'wedding-tools':['Para el día más importante.','Diapositivas, efectos, títulos e invitaciones para vídeos de boda.'],
+        'soccer-tools':['Ambiente de final de campeonato.','Toda la energía del fútbol en tus vídeos.'],
+        'universal-titles':['100 títulos animados, listos para usar.','Lleva tus proyectos a otro nivel con títulos para cualquier estilo.'],
+        'colorful-transitions':['Cortes con personalidad.','Transiciones coloridas con un toque divertido.'],
+        'whiteboard-universe':['Explica cualquier idea dibujándola.','Crea animaciones al estilo pizarra blanca.'],
+        'essential-callouts':['Señala lo que importa.','Destaca información importante con llamadas dinámicas.'],
+        'cosmo-slice':['Varias escenas. Una sola pantalla.','Plantillas de pantalla dividida fáciles de usar.']},
+    fr:{'galactic-backdrops':['Emmenez votre montage dans l’espace.','Titres, arrière-plans et effets sur le thème de la science-fiction.'],
+        'wedding-tools':['Pour le plus beau jour.','Diapositives, effets, titres et faire-part pour vos vidéos de mariage.'],
+        'soccer-tools':['L’ambiance d’une finale.','Toute l’énergie du football dans vos vidéos.'],
+        'universal-titles':['100 titres animés, prêts à l’emploi.','Faites passer vos projets au niveau supérieur avec des titres pour tous les styles.'],
+        'colorful-transitions':['Des coupes qui ont du caractère.','Des transitions colorées et ludiques.'],
+        'whiteboard-universe':['Expliquez n’importe quelle idée en la dessinant.','Créez des animations façon tableau blanc.'],
+        'essential-callouts':['Montrez ce qui compte.','Mettez en valeur les informations importantes avec des légendes dynamiques.'],
+        'cosmo-slice':['Plusieurs plans. Un seul écran.','Des modèles d’écran partagé faciles à utiliser.']},
+    de:{'galactic-backdrops':['Bring deinen Schnitt ins All.','Titel, Hintergründe und Effekte im Science-Fiction-Stil.'],
+        'wedding-tools':['Für den wichtigsten Tag.','Slides, Effekte, Titel und Einladungen für Hochzeitsvideos.'],
+        'soccer-tools':['Finalstimmung in jedem Frame.','Die volle Energie des Fußballs in deinen Videos.'],
+        'universal-titles':['100 animierte Titel, sofort einsatzbereit.','Bring deine Projekte auf das nächste Level, mit Titeln für jeden Stil.'],
+        'colorful-transitions':['Schnitte mit Persönlichkeit.','Farbenfrohe Übergänge mit verspieltem Charakter.'],
+        'whiteboard-universe':['Erkläre jede Idee per Zeichnung.','Erstelle Animationen im Whiteboard-Stil.'],
+        'essential-callouts':['Zeig, worauf es ankommt.','Hebe wichtige Informationen mit dynamischen Callouts hervor.'],
+        'cosmo-slice':['Viele Szenen. Ein Bildschirm.','Einfach nutzbare Splitscreen-Vorlagen.']},
+    it:{'galactic-backdrops':['Porta il tuo montaggio nello spazio.','Titoli, sfondi ed effetti a tema fantascienza.'],
+        'wedding-tools':['Per il giorno più importante.','Slide, effetti, titoli e inviti per video di matrimonio.'],
+        'soccer-tools':['L’atmosfera di una finale.','Tutta l’energia del calcio nei tuoi video.'],
+        'universal-titles':['100 titoli animati, pronti all’uso.','Porta i tuoi progetti a un altro livello con titoli per ogni stile.'],
+        'colorful-transitions':['Tagli con personalità.','Transizioni colorate dal carattere giocoso.'],
+        'whiteboard-universe':['Spiega qualsiasi idea disegnandola.','Crea animazioni in stile lavagna bianca.'],
+        'essential-callouts':['Indica ciò che conta.','Metti in evidenza le informazioni importanti con callout dinamici.'],
+        'cosmo-slice':['Più scene. Un solo schermo.','Template split screen facili da usare.']},
+    ja:{'galactic-backdrops':['あなたの編集を宇宙へ。','SFテーマのタイトル、背景、エフェクト。'],
+        'wedding-tools':['人生でいちばん大切な日に。','結婚式ビデオ用のスライド、エフェクト、タイトル、招待状。'],
+        'soccer-tools':['決勝戦の熱気をそのままに。','サッカーの躍動感をあなたの映像に。'],
+        'universal-titles':['100種類のアニメーションタイトル。','あらゆるスタイルに合うタイトルで、プロジェクトをワンランク上へ。'],
+        'colorful-transitions':['個性あふれるトランジション。','遊び心のあるカラフルなトランジション。'],
+        'whiteboard-universe':['描いて、どんなアイデアも伝える。','ホワイトボード風アニメーションを作成。'],
+        'essential-callouts':['大切なところを指し示す。','重要な情報をダイナミックなコールアウトで強調。'],
+        'cosmo-slice':['複数のシーンを、ひとつの画面に。','使いやすい分割画面レイアウトのテンプレート。']}
+  };
+
+  const fxUrl = p => 'https://fxfactory.com/info/' + p.fx + '/';
+  const ytUrl = p => 'https://www.youtube.com/watch?v=' + p.yt;
+  const ICON_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor" opacity=".22"/><path fill="currentColor" d="M10 8v8l6-4z"/></svg>';
+  const ICON_PLAY_SM = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 2.5v11l9-5.5z"/></svg>';
+  const ICON_OUT = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M6 3h7v7M13 3 4 12"/></svg>';
+  const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  const langMenu = document.getElementById('lang-menu');
+  let lang = 'en';
+  try { const s = localStorage.getItem('mg-lang'); if (s && T[s]) lang = s; } catch(e) {}
+
+  function render(){
+    const t = T[lang];
+    const L = LANGS.find(l => l.code === lang);
+    document.documentElement.lang = L.html;
+    document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.dataset.i18n; if (t[k]) el.textContent = t[k]; });
+    document.getElementById('lang-code').textContent = L.short;
+    document.getElementById('lang-toggle').setAttribute('aria-label', t.langLabel + ': ' + L.name);
+    langMenu.setAttribute('aria-label', t.langLabel);
+    langMenu.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', String(b.dataset.lang === lang)));
+    document.querySelector('.nav-links').setAttribute('aria-label', t.sections);
+    document.getElementById('rail').setAttribute('aria-label', t.videos);
+    document.getElementById('rail-prev').setAttribute('aria-label', t.prev);
+    document.getElementById('rail-next').setAttribute('aria-label', t.next);
+
+    document.getElementById('product-grid').innerHTML = PRODUCTS.map((p, i) => {
+      const c = p[lang] || {h: PX[lang][p.id][0], d: PX[lang][p.id][1]};
+      return `<article class="tile${p.feature ? ' feature' : ''}" id="${p.id}">
+        <h3 class="name">${esc(p.name)}</h3>
+        <p class="headline">${esc(c.h)}</p>
+        <p class="desc">${esc(c.d)}</p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="${fxUrl(p)}" target="_blank" rel="noopener">${t.buy}</a>
+          <a class="btn btn-ghost" href="${ytUrl(p)}" target="_blank" rel="noopener">${ICON_PLAY_SM}${t.watch}</a>
+        </div>
+        <a class="media" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
+          <img src="img/${p.id}.webp" alt="${esc(p.name)}" width="1280" height="720" ${i > 1 ? 'loading="lazy"' : ''} decoding="async">
+          <span class="play" aria-hidden="true">${ICON_PLAY}${t.play}</span>
+        </a>
+      </article>`;
+    }).join('');
+
+    document.getElementById('rail').innerHTML = PRODUCTS.map(p => `
+      <div class="vcard">
+        <a class="media" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
+          <img src="img/${p.id}.webp" alt="" width="1280" height="720" loading="lazy" decoding="async">
+          <span class="play" aria-hidden="true">${ICON_PLAY}${t.play}</span>
+        </a>
+        <div><h3>${esc(p.name)}</h3><p>${t.demo}</p></div>
+      </div>`).join('');
+
+    document.getElementById('foot-buy').innerHTML = PRODUCTS.map(p => `<li><a href="${fxUrl(p)}" target="_blank" rel="noopener">${esc(p.name)}</a></li>`).join('');
+    document.getElementById('foot-watch').innerHTML = `<li><a href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener"><b>${t['foot.channel']}</b></a></li>` + PRODUCTS.map(p => `<li><a href="${ytUrl(p)}" target="_blank" rel="noopener">${esc(p.name)}</a></li>`).join('');
+    updateArrows();
+  }
+
+  /* Language menu */
+  function setLang(code){
+    lang = code;
+    try { localStorage.setItem('mg-lang', lang); } catch(e) {}
+    render();
+  }
+  const langBtn = document.getElementById('lang-toggle');
+  langMenu.innerHTML = LANGS.map(l => `<li role="none"><button type="button" role="menuitemradio" data-lang="${l.code}" lang="${l.html}" aria-checked="false">${l.name}<span>${l.short}</span></button></li>`).join('');
+  const items = () => [...langMenu.querySelectorAll('button')];
+  function openMenu(){
+    langMenu.hidden = false; langBtn.setAttribute('aria-expanded', 'true');
+    (items().find(b => b.dataset.lang === lang) || items()[0]).focus();
+  }
+  function closeMenu(focusBtn){
+    if (langMenu.hidden) return;
+    langMenu.hidden = true; langBtn.setAttribute('aria-expanded', 'false');
+    if (focusBtn) langBtn.focus();
+  }
+  langBtn.addEventListener('click', () => langMenu.hidden ? openMenu() : closeMenu(false));
+  langMenu.addEventListener('click', e => {
+    const b = e.target.closest('button[data-lang]'); if (!b) return;
+    setLang(b.dataset.lang); closeMenu(true);
+  });
+  langMenu.addEventListener('keydown', e => {
+    const list = items(); const i = list.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown'){ e.preventDefault(); list[(i + 1) % list.length].focus(); }
+    else if (e.key === 'ArrowUp'){ e.preventDefault(); list[(i - 1 + list.length) % list.length].focus(); }
+    else if (e.key === 'Home'){ e.preventDefault(); list[0].focus(); }
+    else if (e.key === 'End'){ e.preventDefault(); list[list.length - 1].focus(); }
+    else if (e.key === 'Escape'){ e.preventDefault(); closeMenu(true); }
+    else if (e.key === 'Tab'){ closeMenu(false); }
+  });
+  document.addEventListener('pointerdown', e => { if (!e.target.closest('.lang-wrap')) closeMenu(false); });
+
+  /* Copy e-mail */
+  const copyBtn = document.getElementById('copy-mail');
+  copyBtn.addEventListener('click', () => {
+    const mail = 'motiongalaxy.templates@gmail.com';
+    const done = () => { copyBtn.textContent = T[lang].copied; setTimeout(() => { copyBtn.textContent = T[lang]['contact.copy']; }, 1600); };
+    const fallback = () => { const a = copyBtn.previousElementSibling; const r = document.createRange(); r.selectNodeContents(a); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+    try { navigator.clipboard.writeText(mail).then(done, fallback); } catch(e) { fallback(); }
+  });
+
+  /* Video rail arrows */
+  const rail = document.getElementById('rail');
+  const prev = document.getElementById('rail-prev');
+  const next = document.getElementById('rail-next');
+  function step(){ const c = rail.querySelector('.vcard'); return c ? c.getBoundingClientRect().width + 16 : 300; }
+  function updateArrows(){
+    prev.disabled = rail.scrollLeft <= 4;
+    next.disabled = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
+  }
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  prev.addEventListener('click', () => rail.scrollBy({left: -step(), behavior: reduce.matches ? 'auto' : 'smooth'}));
+  next.addEventListener('click', () => rail.scrollBy({left: step(), behavior: reduce.matches ? 'auto' : 'smooth'}));
+  rail.addEventListener('scroll', updateArrows, {passive:true});
+  addEventListener('resize', updateArrows);
+
+  /* Static starfield, drawn once per size — no ambient motion */
+  const cv = document.getElementById('stars');
+  function drawStars(){
+    const r = cv.getBoundingClientRect(); if (!r.width) return;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+    const g = cv.getContext('2d'); g.scale(dpr, dpr);
+    let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const n = Math.round(r.width * r.height / 2600);
+    for (let i = 0; i < n; i++){
+      const x = rnd() * r.width, y = rnd() * r.height, s = rnd();
+      g.globalAlpha = 0.15 + s * 0.7;
+      g.fillStyle = s > 0.93 ? '#d9c2ff' : '#ffffff';
+      g.beginPath(); g.arc(x, y, s > 0.97 ? 1.4 : 0.4 + s * 0.6, 0, Math.PI * 2); g.fill();
+    }
+  }
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawStars, 150); });
+
+  render();
+  drawStars();
+})();
+</script>
+
+</body>
+</html>
