@@ -45,6 +45,7 @@ Backup da conversa com o Claude (Claude Code na nuvem) em **6 de novembro de 202
 - Instalada a skill **apple-design** de https://github.com/emilkowalski/skills (licença MIT), e depois mais 13 skills do mesmo repositório úteis para sites: animate, animation-performance, animation-vocabulary, break-ui, choreograph, emil-design-eng, find-animation-opportunities, improve-animations, mobile-native, pick-ui-library, prototype, remove-animations, review-animations. Ficaram de fora animate-expo, write-swift e ask-sonner.
 - As 14 foram juntadas numa skill só, **motion-galaxy-web-design**: um `SKILL.md` que indica qual guia usar em cada situação, mais `guides/<nome>/GUIDE.md`. Ela está neste repositório em `.claude/skills/motion-galaxy-web-design/` e o Claude a carrega sozinho quando abre o repositório.
 - Para usar a skill em qualquer conversa do claude.ai: compacte a pasta `motion-galaxy-web-design` em zip e envie em Settings → Capabilities → Skills.
+- **11/11/2026:** foi adicionado o plugin **modern-web-guidance** (do time do Google Chrome, catálogo `anthropics/claude-plugins-official`), com boas práticas atuais de HTML, CSS e JavaScript. Ele está ativado no repositório em `.claude/settings.json`, então toda sessão do Claude aberta com este repositório já vem com ele. No computador: `claude plugin marketplace update claude-plugins-official` e depois `claude plugin install modern-web-guidance@claude-plugins-official`.
 
 ### 2.3 O novo site
 Feito no estilo do site da Apple, com a skill acima:
