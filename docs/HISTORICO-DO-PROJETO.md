@@ -85,13 +85,19 @@ Material lido da pasta **Motion Galaxy - Backup** (Drive da conta motiongalaxy.t
 - **Fontes da marca (Nasalization e Ethnocentric):** não foram usadas no site, porque a licença Typodermic não permite distribuir os arquivos de fonte, e uma fonte de site é baixada por cada visitante.
 - **Vídeos em loop nos produtos:** ainda não feitos. O conector do Drive só baixa arquivos de até 10 MB, e os vídeos têm de 27 a 658 MB.
 
+### 2.7 Recriação com galáxia animada e efeitos de rolagem (12/11/2026)
+A pedido, o site foi recriado com:
+- **Fundo fixo de galáxia em movimento**, desenhado em canvas com pontos (espiral de dois braços, núcleo brilhante), linhas de órbita com pontos que circulam, estrelas que piscam e estrelas cadentes. O conteúdo rola por cima. A rolagem gira, aproxima e escurece a galáxia. Tem botão de pausa no canto inferior esquerdo e começa parada para quem pede menos movimento. O site passou a ter só tema escuro. A foto do Hubble e o crédito dela saíram.
+- **Efeitos de rolagem no estilo da página do iPhone Duo da Apple** (https://www.apple.com/br/iphone-duo/), recriados com código próprio: menu que ganha fundo ao rolar, abertura que encolhe e some, frase grande que acende palavra por palavra, galeria de destaques que avança sozinha com pontos de progresso e botão de pausa, cards que sobem ao entrar na tela, vídeos dos cards que crescem, números que contam na abertura.
+- A seção de vídeos virou a galeria de destaques e subiu para antes dos produtos.
+- Os efeitos de rolagem usam um recurso recente dos navegadores (animações ligadas à rolagem em CSS). Em navegadores antigos o site aparece completo, só sem esses efeitos.
+
 ## 3. Pendências
 
 - [ ] **Hostinger:** fazer backup do WordPress, esvaziar o `public_html`, conectar o Git (hPanel → Sites → Gerenciar → Avançado → Git, repositório deste projeto, branch `main`, diretório em branco), clicar em Deploy, ativar o Auto Deployment e colar o webhook no GitHub (Settings → Webhooks).
 - [ ] Revisão das traduções por falantes nativos, principalmente o japonês.
 - [ ] Instagram e outras redes sociais: ainda não informados.
 - [ ] Vídeos curtos em loop nos cards dos produtos. Precisa de versões curtas dos vídeos (até 10 MB) no Drive, ou de liberar o download dos originais.
-- [ ] Confirmar a linha de crédito exata da foto da galáxia no site do ESA/Hubble.
 - [ ] Opcional: preços dos produtos (não estavam no site antigo).
 
 ---

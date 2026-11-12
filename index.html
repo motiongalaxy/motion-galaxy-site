@@ -6,65 +6,45 @@
 <title>Motion Galaxy</title>
 <link rel="icon" href="img/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-<link rel="preload" as="image" href="img/hero-galaxy-1920.webp" imagesrcset="img/hero-galaxy-960.webp 960w, img/hero-galaxy-1920.webp 1920w" imagesizes="100vw" fetchpriority="high">
+<meta name="theme-color" content="#000000">
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Customizable templates for Final Cut Pro: titles, transitions, backgrounds and effects. Sold on FxFactory.">
 <style>
-/* Layout: Apple-style product site. Sticky glass nav, starfield hero sized to content,
-   a 2-column grid of product tiles where featured products span the full row,
-   a horizontally snapping video rail, benefits, closing CTA, footer. Dark-first. */
+/* Layout: one fixed, animated galaxy canvas behind everything; the page scrolls over it.
+   Glass nav, hero that recedes on scroll, a statement that lights up word by word,
+   an auto-advancing highlights gallery, product tiles that rise in, benefits, closing CTA.
+   Single dark theme by design: the page is a night sky. */
 :root{
   color-scheme: dark;
   --bg:#000000;
-  --bg-alt:#0b0a10;
-  --tile:#131118;
-  --tile-hi:#1c1924;
+  --tile:rgba(17,15,25,.78);
+  --tile-hi:rgba(38,33,54,.86);
   --fg:#f5f5f7;
-  --muted:#a3a1ad;
-  --hair:rgba(255,255,255,.12);
-  --accent:#b98fff;
+  --muted:#b3b1be;
+  --hair:rgba(255,255,255,.13);
+  --accent:#bd96ff;
   --accent-fill:#8b3dff;
   --accent-fill-hi:#9b57ff;
   --on-accent:#ffffff;
-  --nav:rgba(12,11,16,.72);
-  --menu:rgba(28,25,36,.86);
+  --nav:rgba(9,8,14,.62);
+  --menu:rgba(28,25,36,.9);
   --shadow:0 18px 50px rgba(0,0,0,.55);
-  --glow:rgba(139,61,255,.34);
   --play:rgba(0,0,0,.55);
-  --stars:1;
 
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --ease-out: cubic-bezier(.23,1,.32,1);
-  --ease-in-out: cubic-bezier(.77,0,.175,1);
   --radius-tile: 28px;
   --radius-media: 18px;
   --maxw: 1180px;
   --gutter-l: max(16px, env(safe-area-inset-left, 0px));
   --gutter-r: max(16px, env(safe-area-inset-right, 0px));
 }
-@media (prefers-color-scheme: light){
-  :root:not([data-theme="dark"]){
-    color-scheme: light;
-    --bg:#f5f5f7; --bg-alt:#ffffff; --tile:#ffffff; --tile-hi:#f6f5fa;
-    --fg:#1d1d1f; --muted:#6c6a74; --hair:rgba(0,0,0,.1);
-    --accent:#6d28d9; --accent-fill:#7c3aed; --accent-fill-hi:#6d28d9; --on-accent:#ffffff;
-    --nav:rgba(245,245,247,.76); --menu:rgba(255,255,255,.9); --shadow:0 18px 50px rgba(30,20,60,.18); --glow:rgba(124,58,237,.16); --play:rgba(0,0,0,.5);
-    --stars:0;
-  }
-}
-:root[data-theme="light"]{
-  color-scheme: light;
-  --bg:#f5f5f7; --bg-alt:#ffffff; --tile:#ffffff; --tile-hi:#f6f5fa;
-  --fg:#1d1d1f; --muted:#6c6a74; --hair:rgba(0,0,0,.1);
-  --accent:#6d28d9; --accent-fill:#7c3aed; --accent-fill-hi:#6d28d9; --on-accent:#ffffff;
-  --nav:rgba(245,245,247,.76); --menu:rgba(255,255,255,.9); --shadow:0 18px 50px rgba(30,20,60,.18); --glow:rgba(124,58,237,.16); --play:rgba(0,0,0,.5);
-  --stars:0;
-}
 
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
 body{
-  background:var(--bg); color:var(--fg);
+  margin:0;background:var(--bg); color:var(--fg);
   font: 400 1.0625rem/1.47 var(--font);
   letter-spacing:-.011em;
   -webkit-font-smoothing:antialiased;
@@ -76,11 +56,27 @@ a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%;height:auto}
 h1,h2,h3{margin:0;text-wrap:balance}
 p{margin:0}
+button{touch-action:manipulation}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
 
 .wrap{max-width:calc(var(--maxw) + 32px);margin-inline:auto;padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
 
-/* ---------- Nav (translucent material) ---------- */
+/* ---------- Fixed galaxy ---------- */
+#galaxy{position:fixed;inset:0;width:100%;height:100vh;height:100lvh;z-index:0;display:block;pointer-events:none}
+main,footer{position:relative;z-index:1}
+.bg-toggle{
+  position:fixed;z-index:40;
+  left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  width:44px;height:44px;border-radius:50%;border:1px solid var(--hair);cursor:pointer;
+  background:var(--nav);color:var(--fg);display:grid;place-items:center;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  transition:transform .12s var(--ease-out), border-color .2s ease;
+}
+.bg-toggle:hover{border-color:var(--muted)}
+.bg-toggle:active{transform:scale(.94)}
+.bg-toggle svg{width:16px;height:16px}
+
+/* ---------- Nav (translucent material, gains its surface as the page scrolls) ---------- */
 .nav{
   position:sticky; top:env(safe-area-inset-top,0px); z-index:50;
   background:var(--nav);
@@ -95,6 +91,7 @@ p{margin:0}
 .nav-links a:hover{color:var(--fg)}
 .nav-actions{display:flex;align-items:center;gap:10px;margin-left:8px}
 .lang{
+  display:inline-flex;align-items:center;gap:5px;
   font:600 .75rem/1 var(--font); letter-spacing:.04em;
   color:var(--fg); background:transparent; border:1px solid var(--hair);
   border-radius:999px; padding:7px 10px; cursor:pointer;
@@ -102,7 +99,6 @@ p{margin:0}
 }
 .lang:hover{border-color:var(--muted)}
 .lang:active{transform:scale(.96)}
-.lang{display:inline-flex;align-items:center;gap:5px}
 .lang svg{width:9px;height:9px;transition:transform .2s var(--ease-out)}
 .lang[aria-expanded="true"] svg{transform:rotate(180deg)}
 .lang-wrap{position:relative}
@@ -111,8 +107,8 @@ p{margin:0}
   background:var(--menu);-webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px);
   border:1px solid var(--hair);border-radius:14px;box-shadow:var(--shadow);transform-origin:top right;
 }
-.lang-menu:not([hidden]){animation:pop .18s var(--ease-out)}
 @keyframes pop{from{opacity:0;transform:scale(.95) translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: no-preference){ .lang-menu:not([hidden]){animation:pop .18s var(--ease-out)} }
 .lang-menu button{
   width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
   font:500 .875rem/1 var(--font);color:var(--fg);background:transparent;border:0;border-radius:9px;
@@ -137,73 +133,113 @@ p{margin:0}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:var(--accent-fill);color:var(--on-accent)}
 .btn-primary:hover{background:var(--accent-fill-hi)}
-.btn-ghost{color:var(--accent);border:1px solid currentColor}
-.btn-ghost:hover{background:color-mix(in srgb, var(--accent) 12%, transparent)}
+.btn-ghost{color:var(--accent);border:1px solid currentColor;background:rgba(0,0,0,.28)}
+.btn-ghost:hover{background:color-mix(in srgb, var(--accent) 16%, rgba(0,0,0,.28))}
 .btn-sm{font-size:.8125rem;padding:8px 14px}
 .btn svg{width:14px;height:14px;flex-shrink:0}
 
 /* ---------- Hero ---------- */
-.hero{
-  position:relative;overflow:hidden;isolation:isolate;background:#000;color:var(--fg);
-  /* The hero is always a night-sky band, in both themes */
-  --fg:#f5f5f7;--muted:#b4b2be;--accent:#c4a3ff;--hair:rgba(255,255,255,.14);--glow:rgba(139,61,255,.30);
+.hero{position:relative}
+.hero .wrap{min-height:min(92vh, 860px);display:grid;align-content:center}
+.hero-inner{
+  padding-block:clamp(72px,11vw,140px) clamp(56px,8vw,96px);
+  text-align:center;display:grid;justify-items:center;gap:22px;transform-origin:50% 40%;
 }
-.hero-bg{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:50% 45%;opacity:.95}
-.hero::before{
+.hero .wrap::before{
   content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
-  background:radial-gradient(ellipse at 50% 42%, rgba(0,0,0,.35) 0%, rgba(0,0,0,0) 60%),linear-gradient(to bottom, rgba(0,0,0,.45) 0%, rgba(0,0,0,.05) 35%, rgba(0,0,0,.25) 70%, #000 100%);
+  background:radial-gradient(ellipse 52% 40% at 50% 44%, rgba(0,0,0,.6), rgba(0,0,0,0) 74%);
 }
-.hero::after{
-  content:"";position:absolute;z-index:-1;left:50%;top:62%;width:min(1100px,140vw);aspect-ratio:2/1;
-  transform:translate(-50%,-50%);
-  background:radial-gradient(closest-side, var(--glow), transparent 70%);
-  pointer-events:none;
-}
-.hero .wrap{padding-block:clamp(72px,11vw,140px) clamp(64px,9vw,112px);text-align:center;display:grid;justify-items:center;gap:22px}
 .eyebrow{font-size:clamp(1rem,1.6vw,1.3125rem);font-weight:600;color:var(--accent);letter-spacing:-.01em}
 .hero h1{
-  font-size:clamp(2.75rem,7.4vw,5.75rem); line-height:1.03; letter-spacing:-.04em; font-weight:700;
+  font-size:clamp(2.75rem,7.6vw,6rem); line-height:1.02; letter-spacing:-.04em; font-weight:700;
   max-width:13ch;
 }
-.lead{font-size:clamp(1.125rem,1.9vw,1.4375rem);line-height:1.4;color:var(--muted);max-width:40ch;letter-spacing:-.016em}
+.lead{font-size:clamp(1.125rem,1.9vw,1.4375rem);line-height:1.4;color:#d2d0db;max-width:40ch;letter-spacing:-.016em}
 .hero-ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:6px}
 .facts{
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
-  margin-top:clamp(36px,6vw,64px);width:100%;max-width:760px;
+  margin-top:clamp(28px,5vw,56px);width:100%;max-width:760px;
 }
 .fact{padding:18px 12px;border-top:1px solid var(--hair);text-align:center;min-width:0}
 .fact b{display:block;font-size:clamp(1.5rem,3vw,2.25rem);font-weight:700;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
 .fact span{display:block;font-size:.875rem;color:var(--muted);margin-top:4px}
 
-/* Hero entrance — one orchestrated moment, short stagger */
-@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.hero .in{animation:rise .7s var(--ease-out) both}
-.hero .in:nth-child(2){animation-delay:.06s}
-.hero .in:nth-child(3){animation-delay:.12s}
-.hero .in:nth-child(4){animation-delay:.18s}
-.hero .in:nth-child(5){animation-delay:.26s}
+/* ---------- Statement that lights up ---------- */
+.statement{padding-block:clamp(72px,14vw,200px)}
+.stmt{
+  font-size:clamp(1.75rem,4.6vw,3.75rem);line-height:1.12;letter-spacing:-.032em;font-weight:700;
+  max-width:min(100%, 17em);margin-inline:auto;text-wrap:pretty;
+}
 
 /* ---------- Section heads ---------- */
 section{scroll-margin-top:64px}
-.section{padding-block:clamp(72px,10vw,128px)}
-.section-alt{background:var(--bg-alt)}
+.section{padding-block:clamp(64px,9vw,120px)}
 .head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;margin-bottom:clamp(28px,4vw,48px)}
-.head h2{font-size:clamp(2rem,4.6vw,3.5rem);line-height:1.06;letter-spacing:-.03em;font-weight:700}
+.head h2{font-size:clamp(2rem,4.8vw,3.75rem);line-height:1.05;letter-spacing:-.034em;font-weight:700}
 .head p{color:var(--muted);font-size:clamp(1.0625rem,1.6vw,1.25rem);max-width:44ch;margin-top:10px}
+.chan{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:var(--accent);font-weight:500;font-size:1.0625rem}
+.chan:hover{text-decoration:underline}
+.chan svg{width:20px;height:20px}
+
+/* ---------- Highlights gallery (auto-advancing) ---------- */
+.hrail{
+  --card:min(84vw, 920px);
+  display:grid;grid-auto-flow:column;grid-auto-columns:var(--card);gap:clamp(12px,2vw,24px);
+  overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;
+  padding-inline:calc((100% - var(--card)) / 2);padding-block:6px;
+  scrollbar-width:none;
+}
+.hrail::-webkit-scrollbar{display:none}
+.hcard{
+  position:relative;display:block;scroll-snap-align:center;min-width:0;
+  border-radius:var(--radius-tile);overflow:hidden;aspect-ratio:16/9;background:var(--tile-hi);
+}
+.hcard img{width:100%;height:100%;object-fit:cover}
+.hcard::after{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,0));pointer-events:none}
+.hcap{position:absolute;z-index:1;left:clamp(16px,3vw,36px);right:clamp(16px,3vw,36px);bottom:clamp(14px,2.6vw,30px);display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.hcap b{display:block;font-size:clamp(1.25rem,3vw,2.25rem);letter-spacing:-.03em;line-height:1.1}
+.hcap small{display:block;font-size:clamp(.875rem,1.5vw,1.125rem);color:#e3e1ea;margin-top:4px}
+.play{
+  flex-shrink:0;display:flex;align-items:center;gap:8px;
+  padding:8px 14px 8px 10px;border-radius:999px;
+  background:var(--play);color:#fff;font-size:.8125rem;font-weight:600;
+  -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);
+  transition:transform .3s var(--ease-out);
+}
+.play svg{width:18px;height:18px}
+@media (hover:hover) and (pointer:fine){ .hcard:hover .play,.media:hover .play{transform:scale(1.05)} }
+.gnav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:22px}
+.gbtn{
+  width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;flex-shrink:0;
+  background:var(--tile-hi);color:var(--fg);display:grid;place-items:center;
+  transition:transform .12s var(--ease-out);
+}
+.gbtn:active{transform:scale(.94)}
+.gbtn svg{width:14px;height:14px}
+.dots{display:flex;align-items:center;gap:4px;padding:0 10px;height:44px;border-radius:999px;background:var(--tile-hi)}
+.dot{width:24px;height:44px;border:0;background:transparent;padding:0;cursor:pointer;display:grid;place-items:center;transition:width .35s var(--ease-out)}
+.dot i{display:block;width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.38);overflow:hidden;position:relative;transition:width .35s var(--ease-out)}
+.dot.active{width:56px}
+.dot.active i{width:44px;background:rgba(255,255,255,.28)}
+.dot.active i::after{content:"";position:absolute;inset:0;background:#fff;border-radius:inherit;transform-origin:left center}
+@keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (prefers-reduced-motion: no-preference){
+  .dots.run .dot.active i::after{animation:fill 5s linear forwards}
+}
 
 /* ---------- Product tiles ---------- */
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .tile{
-  background:var(--tile); border-radius:var(--radius-tile); overflow:hidden;
+  background:var(--tile); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius-tile); overflow:hidden;
   display:flex;flex-direction:column;align-items:center;text-align:center;
   padding:clamp(36px,5vw,56px) clamp(16px,2.4vw,28px) clamp(16px,2.4vw,28px);
   min-width:0;
 }
 .tile.feature{grid-column:1 / -1}
 .tile .name{font-size:clamp(1.75rem,3.4vw,2.5rem);font-weight:700;letter-spacing:-.03em;line-height:1.08}
-.tile.feature .name{font-size:clamp(2.25rem,5vw,3.5rem)}
+.tile.feature .name{font-size:clamp(2.25rem,5.4vw,4rem);letter-spacing:-.036em}
 .tile .headline{font-size:clamp(1.125rem,1.9vw,1.5rem);font-weight:500;letter-spacing:-.018em;line-height:1.25;margin-top:6px}
-.tile .desc{color:var(--muted);font-size:1rem;margin-top:10px;max-width:42ch}
+.tile .desc{color:var(--muted);font-size:1rem;margin-top:10px;max-width:46ch}
 .tile .ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:20px}
 .tile .ctas .btn{font-size:.9375rem;padding:11px 18px}
 .media{
@@ -211,80 +247,77 @@ section{scroll-margin-top:64px}
   border-radius:var(--radius-media);overflow:hidden;aspect-ratio:16/9;background:var(--tile-hi);
 }
 .tile.feature .media{max-width:980px}
-.media img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease-out)}
-.play{
-  position:absolute;left:14px;bottom:14px;display:flex;align-items:center;gap:8px;
-  padding:8px 14px 8px 10px;border-radius:999px;
-  background:var(--play);color:#fff;font-size:.8125rem;font-weight:600;
-  -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);
-  transition:transform .3s var(--ease-out), background-color .2s ease;
-}
-.play svg{width:18px;height:18px}
-@media (hover:hover) and (pointer:fine){
-  .media:hover img{transform:scale(1.035)}
-  .media:hover .play{transform:scale(1.04)}
-}
-.media:active .play{transform:scale(.96)}
+.media img{width:100%;height:100%;object-fit:cover}
+.media .play{position:absolute;left:14px;bottom:14px}
 
-/* ---------- Video rail ---------- */
-.rail-wrap{position:relative}
-.rail{
-  display:grid;grid-auto-flow:column;grid-auto-columns:min(80%,360px);gap:16px;
-  overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;
-  --pad-l:max(var(--gutter-l), calc((100% - var(--maxw)) / 2));
-  --pad-r:max(var(--gutter-r), calc((100% - var(--maxw)) / 2));
-  padding-left:var(--pad-l);padding-right:var(--pad-r);scroll-padding-left:var(--pad-l);
-  padding-bottom:8px;scrollbar-width:none;
-}
-.rail::-webkit-scrollbar{display:none}
-.vcard{scroll-snap-align:start;display:flex;flex-direction:column;gap:12px;min-width:0}
-.vcard .media{margin-top:0;border-radius:16px}
-.vcard h3{font-size:1.0625rem;font-weight:600;letter-spacing:-.015em}
-.vcard p{font-size:.875rem;color:var(--muted)}
-.rail-nav{display:flex;gap:10px}
-.chan{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:var(--accent);font-weight:500;font-size:1.0625rem}
-.chan:hover{text-decoration:underline}
-.chan svg{width:20px;height:20px}
+/* ---------- Benefits ---------- */
+.benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.benefit{background:var(--tile);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-tile);padding:clamp(28px,4vw,44px);min-width:0;display:grid;gap:10px;align-content:start}
+.benefit .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--accent);background:color-mix(in srgb, var(--accent) 16%, transparent)}
+.benefit .ico svg{width:22px;height:22px}
+.benefit h3{font-size:clamp(1.25rem,2.2vw,1.625rem);letter-spacing:-.022em;line-height:1.2;margin-top:8px}
+.benefit p{color:var(--muted);max-width:46ch}
+
+/* ---------- CTA ---------- */
+.cta{text-align:center;padding-block:clamp(88px,14vw,200px)}
+.cta .wrap{display:grid;justify-items:center;gap:18px}
+.cta h2{font-size:clamp(2.25rem,6.4vw,5rem);line-height:1.03;letter-spacing:-.04em;font-weight:700;max-width:14ch}
+.cta p{color:#d2d0db;font-size:clamp(1.0625rem,1.6vw,1.25rem);max-width:46ch}
 .cta-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:6px}
 .contact{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;margin-top:22px;padding-top:26px;border-top:1px solid var(--hair);width:100%;max-width:560px}
 .contact span{color:var(--muted)}
 .contact a{color:var(--fg);font-weight:600;user-select:all;-webkit-user-select:all;overflow-wrap:anywhere}
 .contact a:hover{color:var(--accent)}
-.copy{font:600 .75rem/1 var(--font);color:var(--fg);background:var(--tile-hi);border:1px solid var(--hair);border-radius:999px;padding:7px 12px;cursor:pointer;transition:transform .1s var(--ease-out)}
+.copy{font:600 .75rem/1 var(--font);color:var(--fg);background:var(--tile-hi);border:1px solid var(--hair);border-radius:999px;padding:9px 14px;cursor:pointer;transition:transform .1s var(--ease-out)}
 .copy:active{transform:scale(.96)}
-.foot-mail{display:inline-block;margin-top:10px;color:var(--fg);overflow-wrap:anywhere}
-.arrow{
-  width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;
-  background:var(--tile-hi);color:var(--fg);display:grid;place-items:center;
-  transition:transform .12s var(--ease-out), opacity .2s ease;
-}
-.arrow:active{transform:scale(.94)}
-.arrow:disabled{opacity:.35;cursor:default}
-.arrow svg{width:16px;height:16px}
-
-/* ---------- Benefits ---------- */
-.benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.benefit{background:var(--tile);border-radius:var(--radius-tile);padding:clamp(28px,4vw,44px);min-width:0;display:grid;gap:10px;align-content:start}
-.benefit .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--accent);background:color-mix(in srgb, var(--accent) 14%, transparent)}
-.benefit .ico svg{width:22px;height:22px}
-.benefit h3{font-size:clamp(1.25rem,2.2vw,1.625rem);letter-spacing:-.022em;line-height:1.2;margin-top:8px}
-.benefit p{color:var(--muted);max-width:46ch}
-
-/* ---------- CTA band ---------- */
-.cta{text-align:center}
-.cta .wrap{display:grid;justify-items:center;gap:18px}
-.cta h2{font-size:clamp(2rem,5vw,3.75rem);line-height:1.05;letter-spacing:-.035em;font-weight:700;max-width:16ch}
-.cta p{color:var(--muted);font-size:clamp(1.0625rem,1.6vw,1.25rem);max-width:46ch}
 
 /* ---------- Footer ---------- */
-footer{border-top:1px solid var(--hair);font-size:.8125rem;color:var(--muted)}
+footer{border-top:1px solid var(--hair);font-size:.8125rem;color:var(--muted);background:rgba(0,0,0,.74)}
 footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
 .foot-cols{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:28px}
 .foot-cols h4{margin:0 0 10px;font-size:.8125rem;color:var(--fg);font-weight:600}
 .foot-cols ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .foot-cols a:hover{color:var(--fg);text-decoration:underline}
 .foot-brand .logo{display:block;height:18px;width:auto;aspect-ratio:387/67.5;color:var(--fg);margin-bottom:12px}
-.legal{border-top:1px solid var(--hair);padding-top:18px;display:flex;flex-wrap:wrap;gap:6px 24px;justify-content:space-between}
+.foot-mail{display:inline-block;margin-top:10px;color:var(--fg);overflow-wrap:anywhere}
+.legal{border-top:1px solid var(--hair);padding-top:18px;padding-left:56px;display:flex;flex-wrap:wrap;gap:6px 24px;justify-content:space-between}
+
+/* ---------- Motion ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes lit{from{opacity:.16}to{opacity:1}}
+@keyframes recede{to{opacity:0;transform:scale(.9) translateY(-4vh)}}
+@keyframes rise-in{from{opacity:0;transform:translateY(56px) scale(.97)}}
+@keyframes media-in{from{transform:scale(.86);border-radius:36px}}
+@keyframes slide-dim{entry 0%{opacity:.35;transform:scale(.92)} entry 100%,exit 0%{opacity:1;transform:none} exit 100%{opacity:.35;transform:scale(.92)}}
+@keyframes nav-surface{from{background-color:rgba(9,8,14,0);border-bottom-color:rgba(255,255,255,0)}}
+
+@media (prefers-reduced-motion: no-preference){
+  /* Hero entrance: one orchestrated moment on load */
+  .hero .in{animation:rise .8s var(--ease-out) both}
+  .hero .in:nth-child(2){animation-delay:.07s}
+  .hero .in:nth-child(3){animation-delay:.14s}
+  .hero .in:nth-child(4){animation-delay:.21s}
+  .hero .in:nth-child(5){animation-delay:.3s}
+
+  /* Scroll-linked motion, native only (decorative: without support the page is simply static) */
+  @supports ((animation-timeline: view()) and (animation-range: entry)){
+    .nav{animation:nav-surface linear both;animation-timeline:scroll(root);animation-range:0 160px}
+
+    .hero-inner{animation:recede linear forwards;animation-timeline:view();animation-range:exit 0% exit 85%}
+
+    .stmt{view-timeline:--stmt block}
+    .stmt span{
+      animation:lit linear both;animation-timeline:--stmt;
+      animation-range:cover calc(18% + var(--p) * 32%) cover calc(28% + var(--p) * 32%);
+    }
+
+    .reveal{animation:rise-in linear both;animation-timeline:view();animation-range:entry 0% cover 22%}
+    .benefit:nth-child(even),.grid .tile:not(.feature):nth-of-type(odd){animation-range:entry 8% cover 28%}
+    .tile .media{animation:media-in linear both;animation-timeline:view();animation-range:entry 0% cover 34%}
+
+    .hcard{animation:slide-dim linear both;animation-timeline:view(inline)}
+  }
+}
 
 /* ---------- Responsive ---------- */
 @media (max-width: 760px){
@@ -292,35 +325,33 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   .nav-actions{margin-left:auto}
   .grid,.benefits{grid-template-columns:minmax(0,1fr)}
   .tile{--radius-tile:22px}
+  .hrail{--card:88vw}
+  .hcap .play{display:none}
   .foot-cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .foot-brand{grid-column:1 / -1}
-  .head .rail-nav{display:none}
 }
 @media (max-width: 420px){
   .facts{grid-template-columns:minmax(0,1fr)}
   .fact{padding:12px}
   .hero-ctas .btn{flex:1 1 100%}
+  .dot{width:18px}
+  .dot.active{width:44px}
+  .dot.active i{width:34px}
 }
 
 /* ---------- Accessibility preferences ---------- */
-@media (prefers-reduced-motion: reduce){
-  html{scroll-behavior:auto}
-  .hero .in{animation:none}
-  .lang-menu:not([hidden]){animation:none}
-  *,*::before,*::after{transition-duration:.01ms!important}
-  .media:hover img{transform:none}
-}
 @media (prefers-reduced-transparency: reduce){
-  .nav{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .nav,.bg-toggle{background:#0b0a10;-webkit-backdrop-filter:none;backdrop-filter:none}
+  .tile,.benefit{background:#121019}
   .play{background:#000;-webkit-backdrop-filter:none;backdrop-filter:none}
 }
 @media (prefers-contrast: more){
-  :root{--muted:var(--fg);--hair:var(--fg)}
+  :root{--muted:#f5f5f7;--hair:#f5f5f7;--tile:#0c0b12}
 }
 </style>
-
 </head>
 <body>
+<canvas id="galaxy" aria-hidden="true"></canvas>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="mg-logo" viewBox="111.25 341.75 387.00 67.50">
 <defs>
 <g>
@@ -387,10 +418,10 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Motion Galaxy"><svg class="logo" role="img" aria-label="Motion Galaxy"><use href="#mg-logo"/></svg></a>
     <nav class="nav-links" aria-label="Sections">
-      <a href="#produtos" data-i18n="nav.products">Products</a>
       <a href="#videos" data-i18n="nav.videos">Videos</a>
+      <a href="#produtos" data-i18n="nav.products">Products</a>
       <a href="#vantagens" data-i18n="nav.why">Why us</a>
-      <a href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener" translate="no">YouTube</a>
       <a href="#contato" data-i18n="nav.contact">Contact</a>
     </nav>
     <div class="nav-actions">
@@ -405,8 +436,8 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
 
 <main id="top">
   <section class="hero" aria-labelledby="hero-title">
-    <img class="hero-bg" src="img/hero-galaxy-1920.webp" srcset="img/hero-galaxy-960.webp 960w, img/hero-galaxy-1920.webp 1920w" sizes="100vw" alt="" width="1920" height="758" fetchpriority="high" decoding="async">
     <div class="wrap">
+      <div class="hero-inner">
       <p class="eyebrow in" data-i18n="hero.eyebrow">Templates for Final Cut Pro</p>
       <h1 id="hero-title" class="in" data-i18n="hero.title">Your videos, in another orbit.</h1>
       <p class="lead in" data-i18n="hero.lead">Customizable titles, transitions, backgrounds and effects. Drop them on the timeline, adjust colors and fonts, and deliver in minutes.</p>
@@ -415,16 +446,38 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
         <a class="btn btn-ghost" href="#videos"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 2.5v11l9-5.5z"/></svg><span data-i18n="hero.cta2">Watch the demos</span></a>
       </div>
       <div class="facts in">
-        <div class="fact"><b>8</b><span data-i18n="fact.1">template packs</span></div>
-        <div class="fact"><b>100</b><span data-i18n="fact.2">titles in Universal Titles</span></div>
-        <div class="fact"><b>FxFactory</b><span data-i18n="fact.3">purchase and install</span></div>
+        <div class="fact"><b data-count="8">8</b><span data-i18n="fact.1">template packs</span></div>
+        <div class="fact"><b data-count="100">100</b><span data-i18n="fact.2">titles in Universal Titles</span></div>
+        <div class="fact"><b translate="no">FxFactory</b><span data-i18n="fact.3">purchase and install</span></div>
       </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="statement" aria-label="Motion Galaxy">
+    <div class="wrap"><p class="stmt" id="stmt"></p></div>
+  </section>
+
+  <section id="videos" class="section" aria-labelledby="videos-title">
+    <div class="wrap">
+      <div class="head reveal">
+        <div>
+          <h2 id="videos-title" data-i18n="videos.title">See them in action.</h2>
+          <p data-i18n="videos.sub">The demo for every pack, on YouTube.</p>
+          <a class="chan" href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9v6l5-3z" fill="#000"/></svg><span data-i18n="videos.channel">Visit the @motion-galaxy channel</span> ›</a>
+        </div>
+      </div>
+    </div>
+    <div class="hrail" id="hrail" tabindex="0" aria-label="Videos"></div>
+    <div class="gnav">
+      <div class="dots" id="dots"></div>
+      <button class="gbtn" id="gplay" type="button" aria-label="Pause"></button>
     </div>
   </section>
 
   <section id="produtos" class="section" aria-labelledby="products-title">
     <div class="wrap">
-      <div class="head">
+      <div class="head reveal">
         <div>
           <h2 id="products-title" data-i18n="products.title">The products.</h2>
           <p data-i18n="products.sub">Every pack has a demo video and is sold on FxFactory.</p>
@@ -434,43 +487,26 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     </div>
   </section>
 
-  <section id="videos" class="section section-alt" aria-labelledby="videos-title">
-    <div class="wrap">
-      <div class="head">
-        <div>
-          <h2 id="videos-title" data-i18n="videos.title">See them in action.</h2>
-          <p data-i18n="videos.sub">The demo for every pack, on YouTube.</p>
-          <a class="chan" href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9v6l5-3z" fill="var(--bg-alt)"/></svg><span data-i18n="videos.channel">Visit the @motion-galaxy channel</span> ›</a>
-        </div>
-        <div class="rail-nav">
-          <button class="arrow" id="rail-prev" type="button" aria-label="Previous"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M10 3 5 8l5 5"/></svg></button>
-          <button class="arrow" id="rail-next" type="button" aria-label="Next"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 3 5 5-5 5"/></svg></button>
-        </div>
-      </div>
-    </div>
-    <div class="rail-wrap"><div class="rail" id="rail" tabindex="0" aria-label="Videos"></div></div>
-  </section>
-
   <section id="vantagens" class="section" aria-labelledby="why-title">
     <div class="wrap">
-      <div class="head"><div><h2 id="why-title" data-i18n="why.title">Why Motion Galaxy.</h2></div></div>
+      <div class="head reveal"><div><h2 id="why-title" data-i18n="why.title">Why Motion Galaxy.</h2></div></div>
       <div class="benefits">
-        <article class="benefit">
+        <article class="benefit reveal">
           <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
           <h3 data-i18n="why.1.t">Save time and energy</h3>
           <p data-i18n="why.1.d">Say goodbye to long hours of editing. Create professional videos in minutes and focus on what really matters: telling your story.</p>
         </article>
-        <article class="benefit">
+        <article class="benefit reveal">
           <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
           <h3 data-i18n="why.2.t">Unlimited customization</h3>
           <p data-i18n="why.2.d">Adjust every element to match your vision, from fonts and colors to transitions and effects. Whatever your message, the template adapts to it.</p>
         </article>
-        <article class="benefit">
+        <article class="benefit reveal">
           <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
           <h3 data-i18n="why.3.t">A strong personal brand</h3>
           <p data-i18n="why.3.d">Add your logo, color scheme and visual elements so your identity shines in every frame.</p>
         </article>
-        <article class="benefit">
+        <article class="benefit reveal">
           <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg></div>
           <h3 data-i18n="why.4.t">Infinite inspiration</h3>
           <p data-i18n="why.4.d">A growing library of professionally made templates. From ads to wedding invitations, there is one for every project.</p>
@@ -479,8 +515,8 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     </div>
   </section>
 
-  <section id="contato" class="section section-alt cta" aria-labelledby="cta-title">
-    <div class="wrap">
+  <section id="contato" class="cta" aria-labelledby="cta-title">
+    <div class="wrap reveal">
       <h2 id="cta-title" data-i18n="cta.title">The full collection is on FxFactory.</h2>
       <p data-i18n="cta.sub">Buy and install through FxFactory, the plug-in store for Final Cut Pro, Motion and Premiere Pro.</p>
       <div class="cta-btns">
@@ -489,7 +525,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       </div>
       <div class="contact">
         <span data-i18n="contact.label">Get in touch:</span>
-        <a href="mailto:motiongalaxy.templates@gmail.com">motiongalaxy.templates@gmail.com</a>
+        <a href="mailto:motiongalaxy.templates@gmail.com" translate="no">motiongalaxy.templates@gmail.com</a>
         <button class="copy" id="copy-mail" type="button" data-i18n="contact.copy">Copy</button>
       </div>
     </div>
@@ -502,11 +538,11 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       <div class="foot-brand">
         <svg class="logo" role="img" aria-label="Motion Galaxy"><use href="#mg-logo"/></svg>
         <p data-i18n="foot.tag">Motion Galaxy, your key to innovation.</p>
-        <a class="foot-mail" href="mailto:motiongalaxy.templates@gmail.com">motiongalaxy.templates@gmail.com</a>
+        <a class="foot-mail" href="mailto:motiongalaxy.templates@gmail.com" translate="no">motiongalaxy.templates@gmail.com</a>
       </div>
       <div>
         <h4 data-i18n="foot.buy">Buy on FxFactory</h4>
-        <ul id="foot-buy"></ul>
+        <ul id="foot-buy" translate="no"></ul>
       </div>
       <div>
         <h4 data-i18n="foot.watch">Watch on YouTube</h4>
@@ -516,10 +552,11 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     <div class="legal">
       <span data-i18n="foot.copy">© 2026 Motion Galaxy. Creative director: Tiago Pacianotto.</span>
       <span data-i18n="foot.tm">Final Cut Pro and Motion are trademarks of Apple Inc.</span>
-      <span data-i18n="foot.credit">Galaxy image: ESA/Hubble &amp; NASA (CC BY 4.0).</span>
     </div>
   </div>
 </footer>
+
+<button class="bg-toggle" id="bg-toggle" type="button" aria-label="Pause background animation"></button>
 
 <script>
 (function(){
@@ -552,6 +589,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
 
   const T = {
     pt:{
+      'stmt':'Oito pacotes de templates para o Final Cut Pro. Títulos, transições, fundos e efeitos que você arrasta para a timeline, personaliza em minutos e entrega com cara de estúdio.','hl.pause':'Pausar','hl.play':'Reproduzir','bg.pause':'Pausar animação do fundo','bg.play':'Reproduzir animação do fundo',
       'nav.products':'Produtos','nav.videos':'Vídeos','nav.why':'Vantagens','nav.buy':'Comprar',
       'hero.eyebrow':'Templates para Final Cut Pro','hero.title':'Seus vídeos em outra órbita.',
       'hero.lead':'Títulos, transições, fundos e efeitos personalizáveis. Arraste para a timeline, ajuste cores e fontes, e entregue em minutos.',
@@ -566,11 +604,12 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       'why.4.t':'Inspiração sem fim','why.4.d':'Uma biblioteca em expansão, feita por profissionais. De anúncios a convites de casamento, há um template para cada projeto.',
       'cta.title':'A coleção completa está na FxFactory.','cta.sub':'Compre e instale pela FxFactory, a loja de plug-ins para Final Cut Pro, Motion e Premiere Pro.','cta.btn':'Ver todos na FxFactory','nav.contact':'Contato','contact.label':'Fale com a gente:','contact.copy':'Copiar',copied:'Copiado','cta.channel':'Seguir no YouTube','videos.channel':'Ver o canal @motion-galaxy','foot.channel':'Canal @motion-galaxy',
       'foot.tag':'Motion Galaxy, sua chave para a inovação.','foot.buy':'Comprar na FxFactory','foot.watch':'Assistir no YouTube',
-      'foot.copy':'© 2026 Motion Galaxy. Diretor criativo: Tiago Pacianotto.','foot.tm':'Final Cut Pro e Motion são marcas da Apple Inc.','foot.credit':'Imagem da galáxia: ESA/Hubble & NASA (CC BY 4.0).',
+      'foot.copy':'© 2026 Motion Galaxy. Diretor criativo: Tiago Pacianotto.','foot.tm':'Final Cut Pro e Motion são marcas da Apple Inc.',
       buy:'Comprar na FxFactory', watch:'Assistir ao vídeo', play:'Assistir', demo:'Demonstração no YouTube',
       prev:'Anterior', next:'Próximo', langLabel:'Idioma', sections:'Seções', videos:'Vídeos'
     },
     en:{
+      'stmt':'Eight packs of templates for Final Cut Pro. Titles, transitions, backgrounds and effects that you drop on the timeline, customize in minutes and deliver looking like a studio made them.','hl.pause':'Pause','hl.play':'Play','bg.pause':'Pause background animation','bg.play':'Play background animation',
       'nav.products':'Products','nav.videos':'Videos','nav.why':'Why us','nav.buy':'Buy',
       'hero.eyebrow':'Templates for Final Cut Pro','hero.title':'Your videos, in another orbit.',
       'hero.lead':'Customizable titles, transitions, backgrounds and effects. Drop them on the timeline, adjust colors and fonts, and deliver in minutes.',
@@ -585,11 +624,12 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       'why.4.t':'Infinite inspiration','why.4.d':'A growing library of professionally made templates. From ads to wedding invitations, there is one for every project.',
       'cta.title':'The full collection is on FxFactory.','cta.sub':'Buy and install through FxFactory, the plug-in store for Final Cut Pro, Motion and Premiere Pro.','cta.btn':'See all on FxFactory','nav.contact':'Contact','contact.label':'Get in touch:','contact.copy':'Copy',copied:'Copied','cta.channel':'Follow on YouTube','videos.channel':'Visit the @motion-galaxy channel','foot.channel':'@motion-galaxy channel',
       'foot.tag':'Motion Galaxy, your key to innovation.','foot.buy':'Buy on FxFactory','foot.watch':'Watch on YouTube',
-      'foot.copy':'© 2026 Motion Galaxy. Creative director: Tiago Pacianotto.','foot.tm':'Final Cut Pro and Motion are trademarks of Apple Inc.','foot.credit':'Galaxy image: ESA/Hubble & NASA (CC BY 4.0).',
+      'foot.copy':'© 2026 Motion Galaxy. Creative director: Tiago Pacianotto.','foot.tm':'Final Cut Pro and Motion are trademarks of Apple Inc.',
       buy:'Buy on FxFactory', watch:'Watch the video', play:'Watch', demo:'Demo on YouTube',
       prev:'Previous', next:'Next', langLabel:'Language', sections:'Sections', videos:'Videos'
     },
     es:{
+      'stmt':'Ocho paquetes de plantillas para Final Cut Pro. Títulos, transiciones, fondos y efectos que arrastras a la línea de tiempo, personalizas en minutos y entregas con acabado de estudio.','hl.pause':'Pausar','hl.play':'Reproducir','bg.pause':'Pausar animación del fondo','bg.play':'Reproducir animación del fondo',
       'nav.products':'Productos','nav.videos':'Vídeos','nav.why':'Ventajas','nav.buy':'Comprar','nav.contact':'Contacto',
       'hero.eyebrow':'Plantillas para Final Cut Pro','hero.title':'Tus vídeos, en otra órbita.',
       'hero.lead':'Títulos, transiciones, fondos y efectos personalizables. Arrástralos a la línea de tiempo, ajusta colores y fuentes, y entrega en minutos.',
@@ -605,11 +645,12 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       'cta.title':'La colección completa está en FxFactory.','cta.sub':'Compra e instala con FxFactory, la tienda de plug-ins para Final Cut Pro, Motion y Premiere Pro.','cta.btn':'Ver todo en FxFactory','cta.channel':'Seguir en YouTube',
       'contact.label':'Escríbenos:','contact.copy':'Copiar',copied:'Copiado',
       'foot.tag':'Motion Galaxy, tu llave a la innovación.','foot.buy':'Comprar en FxFactory','foot.watch':'Ver en YouTube','foot.channel':'Canal @motion-galaxy',
-      'foot.copy':'© 2026 Motion Galaxy. Director creativo: Tiago Pacianotto.','foot.tm':'Final Cut Pro y Motion son marcas de Apple Inc.','foot.credit':'Imagen de la galaxia: ESA/Hubble & NASA (CC BY 4.0).',
+      'foot.copy':'© 2026 Motion Galaxy. Director creativo: Tiago Pacianotto.','foot.tm':'Final Cut Pro y Motion son marcas de Apple Inc.',
       buy:'Comprar en FxFactory', watch:'Ver el vídeo', play:'Ver', demo:'Demostración en YouTube',
       prev:'Anterior', next:'Siguiente', langLabel:'Idioma', sections:'Secciones', videos:'Vídeos'
     },
     fr:{
+      'stmt':'Huit packs de modèles pour Final Cut Pro. Des titres, transitions, arrière-plans et effets à glisser dans la timeline, à personnaliser en quelques minutes et à livrer avec une finition de studio.','hl.pause':'Pause','hl.play':'Lecture','bg.pause':'Mettre en pause l’animation du fond','bg.play':'Lancer l’animation du fond',
       'nav.products':'Produits','nav.videos':'Vidéos','nav.why':'Avantages','nav.buy':'Acheter','nav.contact':'Contact',
       'hero.eyebrow':'Modèles pour Final Cut Pro','hero.title':'Vos vidéos, sur une autre orbite.',
       'hero.lead':'Titres, transitions, arrière-plans et effets personnalisables. Glissez-les dans la timeline, ajustez couleurs et polices, et livrez en quelques minutes.',
@@ -625,11 +666,12 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       'cta.title':'Toute la collection est sur FxFactory.','cta.sub':'Achetez et installez avec FxFactory, la boutique de plug-ins pour Final Cut Pro, Motion et Premiere Pro.','cta.btn':'Tout voir sur FxFactory','cta.channel':'Suivre sur YouTube',
       'contact.label':'Écrivez-nous :','contact.copy':'Copier',copied:'Copié',
       'foot.tag':'Motion Galaxy, votre clé de l’innovation.','foot.buy':'Acheter sur FxFactory','foot.watch':'Regarder sur YouTube','foot.channel':'Chaîne @motion-galaxy',
-      'foot.copy':'© 2026 Motion Galaxy. Directeur de création : Tiago Pacianotto.','foot.tm':'Final Cut Pro et Motion sont des marques d’Apple Inc.','foot.credit':'Image de la galaxie : ESA/Hubble & NASA (CC BY 4.0).',
+      'foot.copy':'© 2026 Motion Galaxy. Directeur de création : Tiago Pacianotto.','foot.tm':'Final Cut Pro et Motion sont des marques d’Apple Inc.',
       buy:'Acheter sur FxFactory', watch:'Voir la vidéo', play:'Regarder', demo:'Démo sur YouTube',
       prev:'Précédent', next:'Suivant', langLabel:'Langue', sections:'Sections', videos:'Vidéos'
     },
     de:{
+      'stmt':'Acht Vorlagenpakete für Final Cut Pro. Titel, Übergänge, Hintergründe und Effekte, die du in die Timeline ziehst, in Minuten anpasst und in Studioqualität ablieferst.','hl.pause':'Pause','hl.play':'Wiedergabe','bg.pause':'Hintergrundanimation pausieren','bg.play':'Hintergrundanimation abspielen',
       'nav.products':'Produkte','nav.videos':'Videos','nav.why':'Vorteile','nav.buy':'Kaufen','nav.contact':'Kontakt',
       'hero.eyebrow':'Vorlagen für Final Cut Pro','hero.title':'Deine Videos in einer neuen Umlaufbahn.',
       'hero.lead':'Anpassbare Titel, Übergänge, Hintergründe und Effekte. In die Timeline ziehen, Farben und Schriften anpassen und in Minuten fertig sein.',
@@ -645,11 +687,12 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       'cta.title':'Die ganze Kollektion gibt es bei FxFactory.','cta.sub':'Kaufen und installieren über FxFactory, den Plug-in-Store für Final Cut Pro, Motion und Premiere Pro.','cta.btn':'Alle bei FxFactory ansehen','cta.channel':'Auf YouTube folgen',
       'contact.label':'Schreib uns:','contact.copy':'Kopieren',copied:'Kopiert',
       'foot.tag':'Motion Galaxy, dein Schlüssel zur Innovation.','foot.buy':'Bei FxFactory kaufen','foot.watch':'Auf YouTube ansehen','foot.channel':'Kanal @motion-galaxy',
-      'foot.copy':'© 2026 Motion Galaxy. Creative Director: Tiago Pacianotto.','foot.tm':'Final Cut Pro und Motion sind Marken der Apple Inc.','foot.credit':'Galaxienbild: ESA/Hubble & NASA (CC BY 4.0).',
+      'foot.copy':'© 2026 Motion Galaxy. Creative Director: Tiago Pacianotto.','foot.tm':'Final Cut Pro und Motion sind Marken der Apple Inc.',
       buy:'Bei FxFactory kaufen', watch:'Video ansehen', play:'Ansehen', demo:'Demo auf YouTube',
       prev:'Zurück', next:'Weiter', langLabel:'Sprache', sections:'Bereiche', videos:'Videos'
     },
     it:{
+      'stmt':'Otto pacchetti di template per Final Cut Pro. Titoli, transizioni, sfondi ed effetti da trascinare nella timeline, personalizzare in pochi minuti e consegnare con una finitura da studio.','hl.pause':'Pausa','hl.play':'Riproduci','bg.pause':'Metti in pausa l’animazione di sfondo','bg.play':'Avvia l’animazione di sfondo',
       'nav.products':'Prodotti','nav.videos':'Video','nav.why':'Vantaggi','nav.buy':'Acquista','nav.contact':'Contatti',
       'hero.eyebrow':'Template per Final Cut Pro','hero.title':'I tuoi video, in un’altra orbita.',
       'hero.lead':'Titoli, transizioni, sfondi ed effetti personalizzabili. Trascinali nella timeline, regola colori e font e consegna in pochi minuti.',
@@ -665,11 +708,12 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       'cta.title':'La collezione completa è su FxFactory.','cta.sub':'Acquista e installa con FxFactory, lo store di plug-in per Final Cut Pro, Motion e Premiere Pro.','cta.btn':'Vedi tutto su FxFactory','cta.channel':'Seguici su YouTube',
       'contact.label':'Scrivici:','contact.copy':'Copia',copied:'Copiato',
       'foot.tag':'Motion Galaxy, la tua chiave per l’innovazione.','foot.buy':'Acquista su FxFactory','foot.watch':'Guarda su YouTube','foot.channel':'Canale @motion-galaxy',
-      'foot.copy':'© 2026 Motion Galaxy. Direttore creativo: Tiago Pacianotto.','foot.tm':'Final Cut Pro e Motion sono marchi di Apple Inc.','foot.credit':'Immagine della galassia: ESA/Hubble & NASA (CC BY 4.0).',
+      'foot.copy':'© 2026 Motion Galaxy. Direttore creativo: Tiago Pacianotto.','foot.tm':'Final Cut Pro e Motion sono marchi di Apple Inc.',
       buy:'Acquista su FxFactory', watch:'Guarda il video', play:'Guarda', demo:'Demo su YouTube',
       prev:'Precedente', next:'Successivo', langLabel:'Lingua', sections:'Sezioni', videos:'Video'
     },
     ja:{
+      'stmt':'Final Cut Pro用の8つのテンプレートパック。タイトル、トランジション、背景、エフェクトをタイムラインにドラッグして数分でカスタマイズ。スタジオ品質の仕上がりで届けられます。','hl.pause':'一時停止','hl.play':'再生','bg.pause':'背景アニメーションを一時停止','bg.play':'背景アニメーションを再生',
       'nav.products':'製品','nav.videos':'ビデオ','nav.why':'特長','nav.buy':'購入','nav.contact':'お問い合わせ',
       'hero.eyebrow':'Final Cut Pro用テンプレート','hero.title':'あなたの映像を、新しい軌道へ。',
       'hero.lead':'カスタマイズできるタイトル、トランジション、背景、エフェクト。タイムラインにドラッグして、色やフォントを調整すれば、数分で仕上がります。',
@@ -685,7 +729,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       'cta.title':'すべての製品はFxFactoryで。','cta.sub':'Final Cut Pro、Motion、Premiere Pro向けのプラグインストア、FxFactoryで購入・インストールできます。','cta.btn':'FxFactoryですべて見る','cta.channel':'YouTubeでフォロー',
       'contact.label':'お問い合わせ：','contact.copy':'コピー',copied:'コピーしました',
       'foot.tag':'Motion Galaxy、イノベーションへの鍵。','foot.buy':'FxFactoryで購入','foot.watch':'YouTubeで見る','foot.channel':'@motion-galaxy チャンネル',
-      'foot.copy':'© 2026 Motion Galaxy. クリエイティブディレクター：Tiago Pacianotto','foot.tm':'Final Cut ProおよびMotionはApple Inc.の商標です。','foot.credit':'銀河の画像：ESA/Hubble & NASA（CC BY 4.0）',
+      'foot.copy':'© 2026 Motion Galaxy. クリエイティブディレクター：Tiago Pacianotto','foot.tm':'Final Cut ProおよびMotionはApple Inc.の商標です。',
       buy:'FxFactoryで購入', watch:'ビデオを見る', play:'再生', demo:'YouTubeのデモ',
       prev:'前へ', next:'次へ', langLabel:'言語', sections:'セクション', videos:'ビデオ'
     }
@@ -749,13 +793,47 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   const ytUrl = p => 'https://www.youtube.com/watch?v=' + p.yt;
   const ICON_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor" opacity=".22"/><path fill="currentColor" d="M10 8v8l6-4z"/></svg>';
   const ICON_PLAY_SM = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 2.5v11l9-5.5z"/></svg>';
-  const ICON_OUT = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M6 3h7v7M13 3 4 12"/></svg>';
+  const ICON_PAUSE_SM = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg>';
   const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const store = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };
 
   const langMenu = document.getElementById('lang-menu');
+  const hrail = document.getElementById('hrail');
+  const dotsEl = document.getElementById('dots');
+  const gplay = document.getElementById('gplay');
+  const bgBtn = document.getElementById('bg-toggle');
   let lang = 'en';
-  try { const s = localStorage.getItem('mg-lang'); if (s && T[s]) lang = s; } catch(e) {}
+  { const s = store.get('mg-lang'); if (s && T[s]) lang = s; }
+  const copyOf = p => p[lang] || {h: PX[lang][p.id][0], d: PX[lang][p.id][1]};
 
+  /* ---------- Highlights gallery state ---------- */
+  let gIndex = 0, gUser = !reduce.matches, gInView = false;
+  const gStep = () => { const c = hrail.querySelector('.hcard'); return c ? c.getBoundingClientRect().width + parseFloat(getComputedStyle(hrail).columnGap || 0) : 1; };
+  function gSync(){
+    [...dotsEl.children].forEach((d, i) => { d.classList.toggle('active', i === gIndex); d.setAttribute('aria-current', i === gIndex ? 'true' : 'false'); });
+    dotsEl.classList.toggle('run', gUser && gInView);
+    gplay.innerHTML = gUser ? ICON_PAUSE_SM : ICON_PLAY_SM;
+    gplay.setAttribute('aria-label', gUser ? T[lang]['hl.pause'] : T[lang]['hl.play']);
+  }
+  function gGo(i, smooth){
+    gIndex = (i + PRODUCTS.length) % PRODUCTS.length;
+    hrail.scrollTo({left: gIndex * gStep(), behavior: smooth && !reduce.matches ? 'smooth' : 'auto'});
+    gSync();
+  }
+  dotsEl.innerHTML = PRODUCTS.map(p => `<button class="dot" type="button" aria-label="${esc(p.name)}"><i></i></button>`).join('');
+  dotsEl.addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) gGo([...dotsEl.children].indexOf(d), true); });
+  dotsEl.addEventListener('animationend', e => { if (e.animationName === 'fill') gGo(gIndex + 1, true); });
+  gplay.addEventListener('click', () => { gUser = !gUser; gSync(); });
+  let gTick = false;
+  hrail.addEventListener('scroll', () => {
+    if (gTick) return; gTick = true;
+    requestAnimationFrame(() => { gTick = false; const i = Math.round(hrail.scrollLeft / gStep()); if (i !== gIndex && i >= 0 && i < PRODUCTS.length){ gIndex = i; gSync(); } });
+  }, {passive:true});
+  hrail.addEventListener('keydown', e => { if (e.key === 'ArrowRight'){ e.preventDefault(); gGo(gIndex + 1, true); } else if (e.key === 'ArrowLeft'){ e.preventDefault(); gGo(gIndex - 1, true); } });
+  new IntersectionObserver(es => { gInView = es[0].isIntersecting; gSync(); }, {threshold:.5}).observe(hrail);
+
+  /* ---------- Render (language-dependent content) ---------- */
   function render(){
     const t = T[lang];
     const L = LANGS.find(l => l.code === lang);
@@ -766,14 +844,24 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     langMenu.setAttribute('aria-label', t.langLabel);
     langMenu.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', String(b.dataset.lang === lang)));
     document.querySelector('.nav-links').setAttribute('aria-label', t.sections);
-    document.getElementById('rail').setAttribute('aria-label', t.videos);
-    document.getElementById('rail-prev').setAttribute('aria-label', t.prev);
-    document.getElementById('rail-next').setAttribute('aria-label', t.next);
+    hrail.setAttribute('aria-label', t.videos);
 
-    document.getElementById('product-grid').innerHTML = PRODUCTS.map((p, i) => {
-      const c = p[lang] || {h: PX[lang][p.id][0], d: PX[lang][p.id][1]};
-      return `<article class="tile${p.feature ? ' feature' : ''}" id="${p.id}">
-        <h3 class="name">${esc(p.name)}</h3>
+    /* Statement: one span per word (per character in Japanese) so it can light up on scroll */
+    const parts = lang === 'ja' ? Array.from(t.stmt) : t.stmt.split(' ');
+    const n = Math.max(parts.length - 1, 1);
+    document.getElementById('stmt').innerHTML = parts.map((w, i) => `<span style="--p:${(i / n).toFixed(3)}">${esc(w)}</span>`).join(lang === 'ja' ? '' : ' ');
+
+    hrail.innerHTML = PRODUCTS.map((p, i) => `
+      <a class="hcard" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
+        <img src="img/${p.id}.webp" alt="" width="1280" height="720" ${i > 1 ? 'loading="lazy"' : ''} decoding="async">
+        <span class="hcap"><span><b translate="no">${esc(p.name)}</b><small>${esc(copyOf(p).h)}</small></span><span class="play" aria-hidden="true">${ICON_PLAY}${t.play}</span></span>
+      </a>`).join('');
+    hrail.scrollLeft = gIndex * gStep();
+
+    document.getElementById('product-grid').innerHTML = PRODUCTS.map(p => {
+      const c = copyOf(p);
+      return `<article class="tile reveal${p.feature ? ' feature' : ''}" id="${p.id}">
+        <h3 class="name" translate="no">${esc(p.name)}</h3>
         <p class="headline">${esc(c.h)}</p>
         <p class="desc">${esc(c.d)}</p>
         <div class="ctas">
@@ -781,49 +869,27 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
           <a class="btn btn-ghost" href="${ytUrl(p)}" target="_blank" rel="noopener">${ICON_PLAY_SM}${t.watch}</a>
         </div>
         <a class="media" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
-          <img src="img/${p.id}.webp" alt="${esc(p.name)}" width="1280" height="720" ${i > 1 ? 'loading="lazy"' : ''} decoding="async">
+          <img src="img/${p.id}.webp" alt="${esc(p.name)}" width="1280" height="720" loading="lazy" decoding="async">
           <span class="play" aria-hidden="true">${ICON_PLAY}${t.play}</span>
         </a>
       </article>`;
     }).join('');
 
-    document.getElementById('rail').innerHTML = PRODUCTS.map(p => `
-      <div class="vcard">
-        <a class="media" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
-          <img src="img/${p.id}.webp" alt="" width="1280" height="720" loading="lazy" decoding="async">
-          <span class="play" aria-hidden="true">${ICON_PLAY}${t.play}</span>
-        </a>
-        <div><h3>${esc(p.name)}</h3><p>${t.demo}</p></div>
-      </div>`).join('');
-
     document.getElementById('foot-buy').innerHTML = PRODUCTS.map(p => `<li><a href="${fxUrl(p)}" target="_blank" rel="noopener">${esc(p.name)}</a></li>`).join('');
-    document.getElementById('foot-watch').innerHTML = `<li><a href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener"><b>${t['foot.channel']}</b></a></li>` + PRODUCTS.map(p => `<li><a href="${ytUrl(p)}" target="_blank" rel="noopener">${esc(p.name)}</a></li>`).join('');
-    updateArrows();
+    document.getElementById('foot-watch').innerHTML = `<li><a href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener"><b>${t['foot.channel']}</b></a></li>` + PRODUCTS.map(p => `<li><a href="${ytUrl(p)}" target="_blank" rel="noopener" translate="no">${esc(p.name)}</a></li>`).join('');
+    gSync();
+    bgSync();
   }
 
-  /* Language menu */
-  function setLang(code){
-    lang = code;
-    try { localStorage.setItem('mg-lang', lang); } catch(e) {}
-    render();
-  }
+  /* ---------- Language menu ---------- */
+  function setLang(code){ lang = code; store.set('mg-lang', lang); render(); }
   const langBtn = document.getElementById('lang-toggle');
   langMenu.innerHTML = LANGS.map(l => `<li role="none"><button type="button" role="menuitemradio" data-lang="${l.code}" lang="${l.html}" aria-checked="false">${l.name}<span>${l.short}</span></button></li>`).join('');
   const items = () => [...langMenu.querySelectorAll('button')];
-  function openMenu(){
-    langMenu.hidden = false; langBtn.setAttribute('aria-expanded', 'true');
-    (items().find(b => b.dataset.lang === lang) || items()[0]).focus();
-  }
-  function closeMenu(focusBtn){
-    if (langMenu.hidden) return;
-    langMenu.hidden = true; langBtn.setAttribute('aria-expanded', 'false');
-    if (focusBtn) langBtn.focus();
-  }
+  function openMenu(){ langMenu.hidden = false; langBtn.setAttribute('aria-expanded', 'true'); (items().find(b => b.dataset.lang === lang) || items()[0]).focus(); }
+  function closeMenu(focusBtn){ if (langMenu.hidden) return; langMenu.hidden = true; langBtn.setAttribute('aria-expanded', 'false'); if (focusBtn) langBtn.focus(); }
   langBtn.addEventListener('click', () => langMenu.hidden ? openMenu() : closeMenu(false));
-  langMenu.addEventListener('click', e => {
-    const b = e.target.closest('button[data-lang]'); if (!b) return;
-    setLang(b.dataset.lang); closeMenu(true);
-  });
+  langMenu.addEventListener('click', e => { const b = e.target.closest('button[data-lang]'); if (!b) return; setLang(b.dataset.lang); closeMenu(true); });
   langMenu.addEventListener('keydown', e => {
     const list = items(); const i = list.indexOf(document.activeElement);
     if (e.key === 'ArrowDown'){ e.preventDefault(); list[(i + 1) % list.length].focus(); }
@@ -835,7 +901,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   });
   document.addEventListener('pointerdown', e => { if (!e.target.closest('.lang-wrap')) closeMenu(false); });
 
-  /* Copy e-mail */
+  /* ---------- Copy e-mail ---------- */
   const copyBtn = document.getElementById('copy-mail');
   copyBtn.addEventListener('click', () => {
     const mail = 'motiongalaxy.templates@gmail.com';
@@ -844,25 +910,158 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     try { navigator.clipboard.writeText(mail).then(done, fallback); } catch(e) { fallback(); }
   });
 
-  /* Video rail arrows */
-  const rail = document.getElementById('rail');
-  const prev = document.getElementById('rail-prev');
-  const next = document.getElementById('rail-next');
-  function step(){ const c = rail.querySelector('.vcard'); return c ? c.getBoundingClientRect().width + 16 : 300; }
-  function updateArrows(){
-    prev.disabled = rail.scrollLeft <= 4;
-    next.disabled = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
+  /* ---------- Count-up on the hero numbers ---------- */
+  if (!reduce.matches){
+    document.querySelectorAll('[data-count]').forEach(el => {
+      const to = +el.dataset.count, t0 = performance.now() + 350, dur = 1300;
+      el.textContent = '0';
+      (function step(now){
+        const k = Math.min(Math.max((now - t0) / dur, 0), 1), e = 1 - Math.pow(1 - k, 4);
+        el.textContent = String(Math.round(to * e));
+        if (k < 1) requestAnimationFrame(step);
+      })(performance.now());
+    });
   }
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-  prev.addEventListener('click', () => rail.scrollBy({left: -step(), behavior: reduce.matches ? 'auto' : 'smooth'}));
-  next.addEventListener('click', () => rail.scrollBy({left: step(), behavior: reduce.matches ? 'auto' : 'smooth'}));
-  rail.addEventListener('scroll', updateArrows, {passive:true});
-  addEventListener('resize', updateArrows);
 
+  /* ---------- Fixed galaxy: spiral of points, orbit lines, shooting stars ---------- */
+  const cv = document.getElementById('galaxy');
+  const g = cv.getContext('2d', {alpha:false});
+  const TILT = 0.46, INCL = -0.34, TWIST = 5.2;
+  const COLORS = ['#ffffff', '#cdb8ff', '#8fb4ff', '#ffd9a8', '#b98fff'];
+  let W = 0, H = 0, dpr = 1, R = 0, buckets = [], orbits = [], starLayer = null, twinkles = [], shots = [];
+  let time = 0, last = 0, raf = 0, smooth = 0, nextShot = 3;
+  let bgOn = store.get('mg-bg') ? store.get('mg-bg') === 'on' : !reduce.matches;
+
+  function build(){
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    R = Math.max(W * 0.46, H * 0.7);
+    let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const gauss = () => (rnd() + rnd() + rnd() + rnd() - 2) / 2;
+    const count = W < 700 ? 2600 : 6000;
+    buckets = COLORS.flatMap(c => [0.6, 1].map(a => ({c, a, p: []})));
+    for (let i = 0; i < count; i++){
+      const core = rnd() < 0.24;
+      const u = rnd();
+      const r = core ? u * u * R * 0.22 : (0.05 + Math.pow(u, 0.8) * 0.95) * R;
+      const k = r / R;
+      const arm = (i % 2) * Math.PI;
+      const ang = core ? rnd() * Math.PI * 2 : arm + k * TWIST + gauss() * (0.46 - 0.3 * k) + (rnd() < 0.12 ? rnd() * 6.28 : 0);
+      const big = rnd() < 0.09;
+      const ci = core ? (rnd() < 0.7 ? 3 : 0) : (rnd() < 0.36 ? 0 : rnd() < 0.5 ? 1 : rnd() < 0.6 ? 2 : 4);
+      const bright = rnd() < (core ? 0.75 : 0.42) ? 1 : 0;
+      buckets[ci * 2 + bright].p.push(r, ang, 0.012 + 0.07 * (1 - k) * (1 - k), big ? 2.4 : 1.3, gauss() * R * 0.016);
+    }
+    orbits = [0.3, 0.52, 0.78].map((f, i) => ({f, speed: 0.11 - i * 0.028, phase: i * 2.1, dash: i === 1}));
+    starLayer = document.createElement('canvas'); starLayer.width = cv.width; starLayer.height = cv.height;
+    const s = starLayer.getContext('2d'); s.scale(dpr, dpr); s.fillStyle = '#000'; s.fillRect(0, 0, W, H);
+    twinkles = [];
+    const ns = Math.round(W * H / 5200);
+    for (let i = 0; i < ns; i++){
+      const x = rnd() * W, y = rnd() * H, a = rnd();
+      if (i % 9 === 0){ twinkles.push(x, y, rnd() * 6.28, 0.6 + rnd() * 1.4); continue; }
+      s.globalAlpha = 0.12 + a * 0.5; s.fillStyle = a > 0.92 ? '#cdb8ff' : '#fff';
+      s.fillRect(x, y, a > 0.96 ? 1.6 : 1, a > 0.96 ? 1.6 : 1);
+    }
+  }
+
+  function frame(now){
+    const dt = Math.min((now - last) / 1000 || 0, 0.05); last = now;
+    if (bgOn) time += dt;
+    const sy = window.scrollY || 0;
+    smooth += (sy - smooth) * (bgOn ? 0.09 : 1);
+    const prog = Math.min(smooth / (H * 1.4), 1);
+    const zoom = 1 + prog * 0.42;
+    const scr = smooth * 0.0009;
+    const cx = W * 0.5, cy = H * (0.5 + prog * 0.06);
+    const ci = Math.cos(INCL), si = Math.sin(INCL);
+
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.globalAlpha = 1;
+    g.drawImage(starLayer, 0, 0, W, H);
+
+    for (let i = 0; i < twinkles.length; i += 4){
+      g.globalAlpha = 0.25 + 0.55 * (0.5 + 0.5 * Math.sin(time * twinkles[i + 3] + twinkles[i + 2]));
+      g.fillStyle = '#fff'; g.fillRect(twinkles[i], twinkles[i + 1], 1.4, 1.4);
+    }
+
+    const glow = g.createRadialGradient(cx, cy, 0, cx, cy, R * 0.5 * zoom);
+    glow.addColorStop(0, 'rgba(255,225,190,.5)'); glow.addColorStop(0.12, 'rgba(190,150,255,.3)'); glow.addColorStop(0.4, 'rgba(110,60,220,.12)'); glow.addColorStop(1, 'rgba(60,30,140,0)');
+    g.globalAlpha = 1; g.fillStyle = glow;
+    g.save(); g.translate(cx, cy); g.rotate(INCL); g.scale(1, 0.6); g.translate(-cx, -cy); g.fillRect(cx - R, cy - R, R * 2, R * 2); g.restore();
+
+    for (const b of buckets){
+      g.fillStyle = b.c; g.globalAlpha = b.a;
+      const p = b.p;
+      for (let i = 0; i < p.length; i += 5){
+        const a = p[i + 1] + time * p[i + 2] + scr * (0.3 + p[i + 2] * 8);
+        const x0 = Math.cos(a) * p[i] * zoom, y0 = (Math.sin(a) * p[i] * TILT + p[i + 4]) * zoom;
+        const x = cx + x0 * ci - y0 * si, y = cy + x0 * si + y0 * ci;
+        if (x < -2 || x > W + 2 || y < -2 || y > H + 2) continue;
+        const sz = p[i + 3];
+        g.fillRect(x, y, sz, sz);
+      }
+    }
+
+    g.lineWidth = 1;
+    for (const o of orbits){
+      const rx = R * o.f * zoom, ry = rx * TILT;
+      g.globalAlpha = 1; g.strokeStyle = 'rgba(189,150,255,.24)';
+      g.setLineDash(o.dash ? [2, 7] : []);
+      g.beginPath(); g.ellipse(cx, cy, rx, ry, INCL, 0, Math.PI * 2); g.stroke();
+      const a = o.phase + time * o.speed + scr * 1.4;
+      const x0 = Math.cos(a) * rx, y0 = Math.sin(a) * ry;
+      const x = cx + x0 * ci - y0 * si, y = cy + x0 * si + y0 * ci;
+      g.setLineDash([]);
+      g.fillStyle = 'rgba(189,150,255,.22)'; g.beginPath(); g.arc(x, y, 7, 0, 6.2832); g.fill();
+      g.fillStyle = '#e9ddff'; g.beginPath(); g.arc(x, y, 2.4, 0, 6.2832); g.fill();
+    }
+
+    if (bgOn){
+      nextShot -= dt;
+      if (nextShot <= 0){
+        nextShot = 4 + Math.random() * 6;
+        const a = Math.PI * (0.12 + Math.random() * 0.2);
+        shots.push({x: Math.random() * W * 0.8, y: Math.random() * H * 0.45, vx: Math.cos(a) * 620, vy: Math.sin(a) * 620, life: 0});
+      }
+    }
+    for (let i = shots.length - 1; i >= 0; i--){
+      const s = shots[i]; s.life += dt; s.x += s.vx * dt; s.y += s.vy * dt;
+      const k = s.life / 0.9; if (k >= 1){ shots.splice(i, 1); continue; }
+      const tail = 0.16;
+      const grad = g.createLinearGradient(s.x, s.y, s.x - s.vx * tail, s.y - s.vy * tail);
+      grad.addColorStop(0, 'rgba(255,255,255,' + (0.9 * Math.sin(Math.PI * k)).toFixed(3) + ')'); grad.addColorStop(1, 'rgba(255,255,255,0)');
+      g.globalAlpha = 1; g.strokeStyle = grad; g.lineWidth = 1.4;
+      g.beginPath(); g.moveTo(s.x, s.y); g.lineTo(s.x - s.vx * tail, s.y - s.vy * tail); g.stroke();
+    }
+
+    /* Dim the sky as the reader moves into the content */
+    g.globalAlpha = 0.04 + prog * 0.44; g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+
+    raf = bgOn && !document.hidden ? requestAnimationFrame(frame) : 0;
+  }
+  function kick(){ if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+  function bgSync(){
+    bgBtn.innerHTML = bgOn ? ICON_PAUSE_SM : ICON_PLAY_SM;
+    bgBtn.setAttribute('aria-label', bgOn ? T[lang]['bg.pause'] : T[lang]['bg.play']);
+  }
+  bgBtn.addEventListener('click', () => { bgOn = !bgOn; store.set('mg-bg', bgOn ? 'on' : 'off'); bgSync(); kick(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
+  /* While paused the sky stays still but keeps following the scroll position */
+  addEventListener('scroll', () => { if (!bgOn) kick(); }, {passive:true});
+  let rt, lw = 0, lh = 0;
+  addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => {
+      if (cv.clientWidth === lw && Math.abs(cv.clientHeight - lh) < 140) return;
+      lw = cv.clientWidth; lh = cv.clientHeight; build(); kick(); hrail.scrollLeft = gIndex * gStep();
+    }, 160);
+  });
 
   render();
+  build(); lw = W; lh = H; kick();
 })();
 </script>
-
 </body>
 </html>
