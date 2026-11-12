@@ -153,8 +153,9 @@ main,footer{position:relative;z-index:1}
 .hero h1{
   font-size:clamp(2.75rem,7.6vw,6rem); line-height:1.02; letter-spacing:-.04em; font-weight:700;
   max-width:13ch;
+  text-shadow:0 2px 4px rgba(0,0,0,.55), 0 6px 28px rgba(0,0,0,.7), 0 0 60px rgba(0,0,0,.45);
 }
-.lead{font-size:clamp(1.125rem,1.9vw,1.4375rem);line-height:1.4;color:#d2d0db;max-width:40ch;letter-spacing:-.016em}
+.lead{font-size:clamp(1.125rem,1.9vw,1.4375rem);line-height:1.4;color:#d2d0db;max-width:40ch;letter-spacing:-.016em;text-shadow:0 1px 3px rgba(0,0,0,.7), 0 4px 18px rgba(0,0,0,.6)}
 .hero-ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:6px}
 .facts{
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
@@ -182,8 +183,21 @@ section{scroll-margin-top:64px}
 .chan svg{width:20px;height:20px}
 
 /* ---------- Highlights gallery (auto-advancing) ---------- */
+.hwrap{position:relative;--card:min(84vw, 920px)}
+.hnav{
+  position:absolute;z-index:3;top:50%;translate:0 -50%;
+  width:56px;height:56px;border-radius:50%;cursor:pointer;
+  display:grid;place-items:center;color:var(--fg);
+  background:rgba(22,19,32,.62);border:1px solid var(--hair);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);
+  transition:transform .12s var(--ease-out), background-color .2s ease, border-color .2s ease;
+}
+.hnav:hover{background:rgba(48,41,70,.8);border-color:rgba(255,255,255,.3)}
+.hnav:active{transform:scale(.94)}
+.hnav svg{width:18px;height:18px}
+.hnav.prev{left:max(8px, calc((100% - var(--card)) / 2 - 80px))}
+.hnav.next{right:max(8px, calc((100% - var(--card)) / 2 - 80px))}
 .hrail{
-  --card:min(84vw, 920px);
   display:grid;grid-auto-flow:column;grid-auto-columns:var(--card);gap:clamp(12px,2vw,24px);
   overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;
   padding-inline:calc((100% - var(--card)) / 2);padding-block:6px;
@@ -195,6 +209,8 @@ section{scroll-margin-top:64px}
   border-radius:var(--radius-tile);overflow:hidden;aspect-ratio:16/9;background:var(--tile-hi);
 }
 .hcard img{width:100%;height:100%;object-fit:cover}
+.pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease;pointer-events:none}
+.pv.on{opacity:1}
 .hcard::after{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,0));pointer-events:none}
 .hcap{position:absolute;z-index:1;left:clamp(16px,3vw,36px);right:clamp(16px,3vw,36px);bottom:clamp(14px,2.6vw,30px);display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
 .hcap b{display:block;font-size:clamp(1.25rem,3vw,2.25rem);letter-spacing:-.03em;line-height:1.1}
@@ -224,7 +240,7 @@ section{scroll-margin-top:64px}
 .dot.active i::after{content:"";position:absolute;inset:0;background:#fff;border-radius:inherit;transform-origin:left center}
 @keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media (prefers-reduced-motion: no-preference){
-  .dots.run .dot.active i::after{animation:fill 5s linear forwards}
+  .dots.run .dot.active i::after{animation:fill var(--dur, 5s) linear forwards}
 }
 
 /* ---------- Video player (native modal dialog) ---------- */
@@ -362,7 +378,8 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   .nav-actions{margin-left:auto}
   .grid,.benefits{grid-template-columns:minmax(0,1fr)}
   .tile{--radius-tile:22px}
-  .hrail{--card:88vw}
+  .hwrap{--card:88vw}
+  .hnav{width:44px;height:44px}
   .hcap .play{display:none}
   .foot-cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .foot-brand{grid-column:1 / -1}
@@ -506,7 +523,11 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
         </div>
       </div>
     </div>
-    <div class="hrail" id="hrail" tabindex="0" aria-label="Videos"></div>
+    <div class="hwrap">
+      <button class="hnav prev" id="hprev" type="button" aria-label="Previous"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="hrail" id="hrail" tabindex="0" aria-label="Videos"></div>
+      <button class="hnav next" id="hnext" type="button" aria-label="Next"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
     <div class="gnav">
       <div class="dots" id="dots"></div>
       <button class="gbtn" id="gplay" type="button" aria-label="Pause"></button>
@@ -594,7 +615,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   </div>
 </footer>
 
-<button class="bg-toggle" id="bg-toggle" type="button" aria-label="Pause background animation"></button>
+<button class="bg-toggle" id="bg-toggle" type="button" aria-label="Pause animations"></button>
 
 <dialog id="player" closedby="any" aria-labelledby="player-title">
   <div class="player-head">
@@ -608,28 +629,28 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
 <script>
 (function(){
   const PRODUCTS = [
-    {id:'galactic-backdrops', name:'Galactic Backdrops', yt:'964xpDUzNmA', fx:'galacticbackdrops', feature:true,
-      pt:{h:'Leve sua edição para o espaço.', d:'Títulos, fundos e efeitos com tema de ficção científica.'},
-      en:{h:'Take your edit to outer space.', d:'Sci-fi themed titles, backgrounds and effects.'}},
-    {id:'wedding-tools', name:'Wedding Tools', yt:'9xyAmz59ziU', fx:'weddingtools',
-      pt:{h:'Para o dia mais importante.', d:'Slides, efeitos, títulos e convites para vídeos de casamento.'},
-      en:{h:'For the day that matters most.', d:'Custom slides, effects, titles and invitations for wedding videos.'}},
-    {id:'soccer-tools', name:'Soccer Tools', yt:'oX5Egbn9Yp0', fx:'soccertools',
+    {id:'soccer-tools', name:'Soccer Tools', yt:'oX5Egbn9Yp0', fx:'soccertools', feature:true, vid:true,
       pt:{h:'Clima de final de campeonato.', d:'Toda a energia do futebol nos seus vídeos.'},
       en:{h:'Championship energy.', d:'Capture the vibrant energy of soccer.'}},
-    {id:'universal-titles', name:'Universal Titles', yt:'ph8VJp3widI', fx:'universaltitles', feature:true,
-      pt:{h:'100 títulos animados, prontos para usar.', d:'Leve seus projetos a outro nível com títulos para qualquer estilo.'},
-      en:{h:'100 animated titles, ready to use.', d:'Take your projects to the next level with titles for any style.'}},
-    {id:'colorful-transitions', name:'Colorful Transitions', yt:'yzL_EV8RrfQ', fx:'colorfultransitions',
-      pt:{h:'Cortes com personalidade.', d:'Transições coloridas com um toque divertido.'},
-      en:{h:'Cuts with personality.', d:'Transitions with a playful character.'}},
-    {id:'whiteboard-universe', name:'Whiteboard Universe', yt:'Rxf9ALdB6ao', fx:'whiteboarduniverse',
+    {id:'wedding-tools', name:'Wedding Tools', yt:'9xyAmz59ziU', fx:'weddingtools', vid:true,
+      pt:{h:'Para o dia mais importante.', d:'Slides, efeitos, títulos e convites para vídeos de casamento.'},
+      en:{h:'For the day that matters most.', d:'Custom slides, effects, titles and invitations for wedding videos.'}},
+    {id:'whiteboard-universe', name:'Whiteboard Universe', yt:'Rxf9ALdB6ao', fx:'whiteboarduniverse', vid:true,
       pt:{h:'Explique qualquer ideia desenhando.', d:'Fundos, mãos animadas, efeitos de desenho, post-its, formas e textos animados para vídeos no estilo quadro branco.'},
       en:{h:'Explain any idea by drawing it.', d:'Backgrounds, hand animations, draw-on effects, post-it notes, shapes and animated text for whiteboard-style videos.'}},
-    {id:'essential-callouts', name:'Essential Callouts', yt:'dbORt3hlm7U', fx:'essentialcallouts',
+    {id:'essential-callouts', name:'Essential Callouts', yt:'dbORt3hlm7U', fx:'essentialcallouts', feature:true, vid:true,
       pt:{h:'Aponte o que importa.', d:'Destaque informações importantes com chamadas dinâmicas.'},
       en:{h:'Point to what matters.', d:'Highlight important information with dynamic callouts.'}},
-    {id:'cosmo-slice', name:'Cosmo Slice', yt:'sqa3TqQFWWQ', fx:'cosmoslice',
+    {id:'universal-titles', name:'Universal Titles', yt:'ph8VJp3widI', fx:'universaltitles', vid:true,
+      pt:{h:'100 títulos animados, prontos para usar.', d:'Leve seus projetos a outro nível com títulos para qualquer estilo.'},
+      en:{h:'100 animated titles, ready to use.', d:'Take your projects to the next level with titles for any style.'}},
+    {id:'galactic-backdrops', name:'Galactic Backdrops', yt:'964xpDUzNmA', fx:'galacticbackdrops', vid:true,
+      pt:{h:'Leve sua edição para o espaço.', d:'Títulos, fundos e efeitos com tema de ficção científica.'},
+      en:{h:'Take your edit to outer space.', d:'Sci-fi themed titles, backgrounds and effects.'}},
+    {id:'colorful-transitions', name:'Colorful Transitions', yt:'yzL_EV8RrfQ', fx:'colorfultransitions', vid:true, vd:11.8,
+      pt:{h:'Cortes com personalidade.', d:'Transições coloridas com um toque divertido.'},
+      en:{h:'Cuts with personality.', d:'Transitions with a playful character.'}},
+    {id:'cosmo-slice', name:'Cosmo Slice', yt:'sqa3TqQFWWQ', fx:'cosmoslice', vid:true,
       pt:{h:'Várias cenas. Uma só tela.', d:'Divida e anime seus clipes em telas divididas e painéis de vídeo, em formatos horizontal, quadrado e vertical.'},
       en:{h:'Many shots. One screen.', d:'Slice and animate your clips into split screens and video walls, on standard, square and vertical timelines.'}}
   ];
@@ -637,7 +658,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   const T = {
     pt:{
       'close':'Fechar','ytOpen':'Abrir no YouTube',
-      'stmt':'Oito pacotes de templates para o Final Cut Pro. Títulos, transições, fundos e efeitos que você arrasta para a timeline, personaliza em minutos e entrega com cara de estúdio.','hl.pause':'Pausar','hl.play':'Reproduzir','bg.pause':'Pausar animação do fundo','bg.play':'Reproduzir animação do fundo',
+      'stmt':'Oito pacotes de templates para o Final Cut Pro. Títulos, transições, fundos e efeitos que você arrasta para a timeline, personaliza em minutos e entrega com cara de estúdio.','hl.pause':'Pausar','hl.play':'Reproduzir','bg.pause':'Pausar animações','bg.play':'Reproduzir animações',
       'nav.products':'Produtos','nav.videos':'Vídeos','nav.why':'Vantagens','nav.buy':'Comprar',
       'hero.eyebrow':'Templates para Final Cut Pro','hero.title':'Seus vídeos em outra órbita.',
       'hero.lead':'Títulos, transições, fundos e efeitos personalizáveis. Arraste para a timeline, ajuste cores e fontes, e entregue em minutos.',
@@ -658,7 +679,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     },
     en:{
       'close':'Close','ytOpen':'Open on YouTube',
-      'stmt':'Eight packs of templates for Final Cut Pro. Titles, transitions, backgrounds and effects that you drop on the timeline, customize in minutes and deliver looking like a studio made them.','hl.pause':'Pause','hl.play':'Play','bg.pause':'Pause background animation','bg.play':'Play background animation',
+      'stmt':'Eight packs of templates for Final Cut Pro. Titles, transitions, backgrounds and effects that you drop on the timeline, customize in minutes and deliver looking like a studio made them.','hl.pause':'Pause','hl.play':'Play','bg.pause':'Pause animations','bg.play':'Play animations',
       'nav.products':'Products','nav.videos':'Videos','nav.why':'Why us','nav.buy':'Buy',
       'hero.eyebrow':'Templates for Final Cut Pro','hero.title':'Your videos, in another orbit.',
       'hero.lead':'Customizable titles, transitions, backgrounds and effects. Drop them on the timeline, adjust colors and fonts, and deliver in minutes.',
@@ -679,7 +700,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     },
     es:{
       'close':'Cerrar','ytOpen':'Abrir en YouTube',
-      'stmt':'Ocho paquetes de plantillas para Final Cut Pro. Títulos, transiciones, fondos y efectos que arrastras a la línea de tiempo, personalizas en minutos y entregas con acabado de estudio.','hl.pause':'Pausar','hl.play':'Reproducir','bg.pause':'Pausar animación del fondo','bg.play':'Reproducir animación del fondo',
+      'stmt':'Ocho paquetes de plantillas para Final Cut Pro. Títulos, transiciones, fondos y efectos que arrastras a la línea de tiempo, personalizas en minutos y entregas con acabado de estudio.','hl.pause':'Pausar','hl.play':'Reproducir','bg.pause':'Pausar animaciones','bg.play':'Reproducir animaciones',
       'nav.products':'Productos','nav.videos':'Vídeos','nav.why':'Ventajas','nav.buy':'Comprar','nav.contact':'Contacto',
       'hero.eyebrow':'Plantillas para Final Cut Pro','hero.title':'Tus vídeos, en otra órbita.',
       'hero.lead':'Títulos, transiciones, fondos y efectos personalizables. Arrástralos a la línea de tiempo, ajusta colores y fuentes, y entrega en minutos.',
@@ -701,7 +722,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     },
     fr:{
       'close':'Fermer','ytOpen':'Ouvrir sur YouTube',
-      'stmt':'Huit packs de modèles pour Final Cut Pro. Des titres, transitions, arrière-plans et effets à glisser dans la timeline, à personnaliser en quelques minutes et à livrer avec une finition de studio.','hl.pause':'Pause','hl.play':'Lecture','bg.pause':'Mettre en pause l’animation du fond','bg.play':'Lancer l’animation du fond',
+      'stmt':'Huit packs de modèles pour Final Cut Pro. Des titres, transitions, arrière-plans et effets à glisser dans la timeline, à personnaliser en quelques minutes et à livrer avec une finition de studio.','hl.pause':'Pause','hl.play':'Lecture','bg.pause':'Mettre en pause les animations','bg.play':'Lancer les animations',
       'nav.products':'Produits','nav.videos':'Vidéos','nav.why':'Avantages','nav.buy':'Acheter','nav.contact':'Contact',
       'hero.eyebrow':'Modèles pour Final Cut Pro','hero.title':'Vos vidéos, sur une autre orbite.',
       'hero.lead':'Titres, transitions, arrière-plans et effets personnalisables. Glissez-les dans la timeline, ajustez couleurs et polices, et livrez en quelques minutes.',
@@ -723,7 +744,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     },
     de:{
       'close':'Schließen','ytOpen':'Auf YouTube öffnen',
-      'stmt':'Acht Vorlagenpakete für Final Cut Pro. Titel, Übergänge, Hintergründe und Effekte, die du in die Timeline ziehst, in Minuten anpasst und in Studioqualität ablieferst.','hl.pause':'Pause','hl.play':'Wiedergabe','bg.pause':'Hintergrundanimation pausieren','bg.play':'Hintergrundanimation abspielen',
+      'stmt':'Acht Vorlagenpakete für Final Cut Pro. Titel, Übergänge, Hintergründe und Effekte, die du in die Timeline ziehst, in Minuten anpasst und in Studioqualität ablieferst.','hl.pause':'Pause','hl.play':'Wiedergabe','bg.pause':'Animationen pausieren','bg.play':'Animationen abspielen',
       'nav.products':'Produkte','nav.videos':'Videos','nav.why':'Vorteile','nav.buy':'Kaufen','nav.contact':'Kontakt',
       'hero.eyebrow':'Vorlagen für Final Cut Pro','hero.title':'Deine Videos in einer neuen Umlaufbahn.',
       'hero.lead':'Anpassbare Titel, Übergänge, Hintergründe und Effekte. In die Timeline ziehen, Farben und Schriften anpassen und in Minuten fertig sein.',
@@ -745,7 +766,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     },
     it:{
       'close':'Chiudi','ytOpen':'Apri su YouTube',
-      'stmt':'Otto pacchetti di template per Final Cut Pro. Titoli, transizioni, sfondi ed effetti da trascinare nella timeline, personalizzare in pochi minuti e consegnare con una finitura da studio.','hl.pause':'Pausa','hl.play':'Riproduci','bg.pause':'Metti in pausa l’animazione di sfondo','bg.play':'Avvia l’animazione di sfondo',
+      'stmt':'Otto pacchetti di template per Final Cut Pro. Titoli, transizioni, sfondi ed effetti da trascinare nella timeline, personalizzare in pochi minuti e consegnare con una finitura da studio.','hl.pause':'Pausa','hl.play':'Riproduci','bg.pause':'Metti in pausa le animazioni','bg.play':'Avvia le animazioni',
       'nav.products':'Prodotti','nav.videos':'Video','nav.why':'Vantaggi','nav.buy':'Acquista','nav.contact':'Contatti',
       'hero.eyebrow':'Template per Final Cut Pro','hero.title':'I tuoi video, in un’altra orbita.',
       'hero.lead':'Titoli, transizioni, sfondi ed effetti personalizzabili. Trascinali nella timeline, regola colori e font e consegna in pochi minuti.',
@@ -767,7 +788,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     },
     ja:{
       'close':'閉じる','ytOpen':'YouTubeで開く',
-      'stmt':'Final Cut Pro用の8つのテンプレートパック。タイトル、トランジション、背景、エフェクトをタイムラインにドラッグして数分でカスタマイズ。スタジオ品質の仕上がりで届けられます。','hl.pause':'一時停止','hl.play':'再生','bg.pause':'背景アニメーションを一時停止','bg.play':'背景アニメーションを再生',
+      'stmt':'Final Cut Pro用の8つのテンプレートパック。タイトル、トランジション、背景、エフェクトをタイムラインにドラッグして数分でカスタマイズ。スタジオ品質の仕上がりで届けられます。','hl.pause':'一時停止','hl.play':'再生','bg.pause':'アニメーションを一時停止','bg.play':'アニメーションを再生',
       'nav.products':'製品','nav.videos':'ビデオ','nav.why':'特長','nav.buy':'購入','nav.contact':'お問い合わせ',
       'hero.eyebrow':'Final Cut Pro用テンプレート','hero.title':'あなたの映像を、新しい軌道へ。',
       'hero.lead':'カスタマイズできるタイトル、トランジション、背景、エフェクト。タイムラインにドラッグして、色やフォントを調整すれば、数分で仕上がります。',
@@ -862,16 +883,33 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   const copyOf = p => p[lang] || {h: PX[lang][p.id][0], d: PX[lang][p.id][1]};
 
   /* ---------- Highlights gallery state ---------- */
-  let gIndex = 0, gUser = !reduce.matches, gInView = false, playerOpen = false;
+  let bgOn = store.get('mg-bg') ? store.get('mg-bg') === 'on' : !reduce.matches;
+  const saveData = !!(navigator.connection && navigator.connection.saveData);
+  const previewsOn = () => bgOn && !playerOpen && !saveData && !document.hidden;
+  let gIndex = 0, gUser = !reduce.matches, gInView = false, playerOpen = false, gKey = '';
   const gStep = () => { const c = hrail.querySelector('.hcard'); return c ? c.getBoundingClientRect().width + parseFloat(getComputedStyle(hrail).columnGap || 0) : 1; };
   function gSync(){
     [...dotsEl.children].forEach((d, i) => { d.classList.toggle('active', i === gIndex); d.setAttribute('aria-current', i === gIndex ? 'true' : 'false'); });
-    dotsEl.classList.toggle('run', gUser && gInView && !playerOpen);
+    const run = gUser && gInView && previewsOn();
+    const p = PRODUCTS[gIndex];
+    dotsEl.style.setProperty('--dur', p.vid ? (p.vd || 15) + 's' : '5s');
+    dotsEl.classList.toggle('run', run);
+    /* Only the centered card plays its 15-second preview, in step with the dot timer */
+    const key = gIndex + '|' + run;
+    if (key !== gKey){
+      gKey = key;
+      hrail.querySelectorAll('.pv').forEach((v, i) => {
+        if (run && i === gIndex){ v.currentTime = 0; playPv(v); } else v.pause();
+      });
+    }
     gplay.innerHTML = gUser ? ICON_PAUSE_SM : ICON_PLAY_SM;
     gplay.setAttribute('aria-label', gUser ? T[lang]['hl.pause'] : T[lang]['hl.play']);
   }
+  let gLock = 0;
+  hrail.addEventListener('scrollend', () => { gLock = 0; });
   function gGo(i, smooth){
     gIndex = (i + PRODUCTS.length) % PRODUCTS.length;
+    gLock = performance.now() + 900; /* our own scroll animation: don't let scroll events pull the index back */
     hrail.scrollTo({left: gIndex * gStep(), behavior: smooth && !reduce.matches ? 'smooth' : 'auto'});
     gSync();
   }
@@ -879,10 +917,30 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   dotsEl.addEventListener('click', e => { const d = e.target.closest('.dot'); if (d) gGo([...dotsEl.children].indexOf(d), true); });
   dotsEl.addEventListener('animationend', e => { if (e.animationName === 'fill') gGo(gIndex + 1, true); });
   gplay.addEventListener('click', () => { gUser = !gUser; gSync(); });
+  document.getElementById('hprev').addEventListener('click', () => gGo(gIndex - 1, true));
+  document.getElementById('hnext').addEventListener('click', () => gGo(gIndex + 1, true));
+
+  /* ---------- Video previews (muted 15 s loops, loaded only when they play) ---------- */
+  function playPv(v){
+    if (!v.dataset.src) return;
+    if (!v.src) { v.src = v.dataset.src; }
+    v.addEventListener('playing', () => v.classList.add('on'), {once:true});
+    const pr = v.play(); if (pr && pr.catch) pr.catch(() => {});
+  }
+  const tileVis = new Map();
+  function updateTiles(){
+    document.querySelectorAll('#product-grid .pv').forEach(v => {
+      if (tileVis.get(v) && previewsOn()) playPv(v); else v.pause();
+    });
+  }
+  const tileObs = new IntersectionObserver(es => {
+    es.forEach(e => tileVis.set(e.target, e.isIntersecting));
+    updateTiles();
+  }, {threshold:.45});
   let gTick = false;
   hrail.addEventListener('scroll', () => {
     if (gTick) return; gTick = true;
-    requestAnimationFrame(() => { gTick = false; const i = Math.round(hrail.scrollLeft / gStep()); if (i !== gIndex && i >= 0 && i < PRODUCTS.length){ gIndex = i; gSync(); } });
+    requestAnimationFrame(() => { gTick = false; if (performance.now() < gLock) return; const i = Math.round(hrail.scrollLeft / gStep()); if (i !== gIndex && i >= 0 && i < PRODUCTS.length){ gIndex = i; gSync(); } });
   }, {passive:true});
   hrail.addEventListener('keydown', e => { if (e.key === 'ArrowRight'){ e.preventDefault(); gGo(gIndex + 1, true); } else if (e.key === 'ArrowLeft'){ e.preventDefault(); gGo(gIndex - 1, true); } });
   new IntersectionObserver(es => { gInView = es[0].isIntersecting; gSync(); }, {threshold:.5}).observe(hrail);
@@ -908,6 +966,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     hrail.innerHTML = PRODUCTS.map((p, i) => `
       <a class="hcard" data-yt="${p.yt}" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
         <img src="img/${p.id}.webp" alt="" width="1280" height="720" ${i > 1 ? 'loading="lazy"' : ''} decoding="async">
+        ${p.vid ? `<video class="pv" muted loop playsinline preload="none" aria-hidden="true" data-src="video/${p.id}.mp4"></video>` : ''}
         <span class="hcap"><span><b translate="no">${esc(p.name)}</b><small>${esc(copyOf(p).h)}</small></span><span class="play" aria-hidden="true">${ICON_PLAY}${t.play}</span></span>
       </a>`).join('');
     hrail.scrollLeft = gIndex * gStep();
@@ -924,6 +983,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
         </div>
         <a class="media" data-yt="${p.yt}" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
           <img src="img/${p.id}.webp" alt="${esc(p.name)}" width="1280" height="720" loading="lazy" decoding="async">
+          ${p.vid ? `<video class="pv" muted loop playsinline preload="none" aria-hidden="true" data-src="video/${p.id}.mp4"></video>` : ''}
           <span class="play" aria-hidden="true">${ICON_PLAY}${t.play}</span>
         </a>
       </article>`;
@@ -932,6 +992,11 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     document.getElementById('foot-buy').innerHTML = PRODUCTS.map(p => `<li><a href="${fxUrl(p)}" target="_blank" rel="noopener">${esc(p.name)}</a></li>`).join('');
     document.getElementById('foot-watch').innerHTML = `<li><a href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener"><b>${t['foot.channel']}</b></a></li>` + PRODUCTS.map(p => `<li><a href="${ytUrl(p)}" target="_blank" rel="noopener" translate="no">${esc(p.name)}</a></li>`).join('');
     document.getElementById('player-close').setAttribute('aria-label', t.close);
+    document.getElementById('hprev').setAttribute('aria-label', t.prev);
+    document.getElementById('hnext').setAttribute('aria-label', t.next);
+    tileVis.clear(); tileObs.disconnect();
+    document.querySelectorAll('#product-grid .pv').forEach(v => tileObs.observe(v));
+    gKey = '';
     gSync();
     bgSync();
   }
@@ -970,11 +1035,11 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     f.allowFullscreen = true;
     f.referrerPolicy = 'strict-origin-when-cross-origin';
     pFrame.replaceChildren(f);
-    playerOpen = true; gSync();
+    playerOpen = true; gSync(); updateTiles();
     player.showModal();
     return true;
   }
-  player.addEventListener('close', () => { pFrame.replaceChildren(); playerOpen = false; gSync(); kick(); });
+  player.addEventListener('close', () => { pFrame.replaceChildren(); playerOpen = false; gSync(); updateTiles(); kick(); });
   /* Light dismiss where closedby is not supported (Safari) */
   if (!('closedBy' in HTMLDialogElement.prototype)){
     player.addEventListener('click', e => {
@@ -1021,7 +1086,6 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   const COLORS = ['#ffffff', '#cdb8ff', '#8fb4ff', '#ffd9a8', '#b98fff'];
   let W = 0, H = 0, dpr = 1, R = 0, buckets = [], orbits = [], starLayer = null, twinkles = [], shots = [];
   let time = 0, last = 0, raf = 0, smooth = 0, nextShot = 3;
-  let bgOn = store.get('mg-bg') ? store.get('mg-bg') === 'on' : !reduce.matches;
 
   function build(){
     dpr = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -1137,8 +1201,8 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     bgBtn.innerHTML = bgOn ? ICON_PAUSE_SM : ICON_PLAY_SM;
     bgBtn.setAttribute('aria-label', bgOn ? T[lang]['bg.pause'] : T[lang]['bg.play']);
   }
-  bgBtn.addEventListener('click', () => { bgOn = !bgOn; store.set('mg-bg', bgOn ? 'on' : 'off'); bgSync(); kick(); });
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
+  bgBtn.addEventListener('click', () => { bgOn = !bgOn; store.set('mg-bg', bgOn ? 'on' : 'off'); bgSync(); gSync(); updateTiles(); kick(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); gSync(); updateTiles(); });
   /* While paused the sky stays still but keeps following the scroll position */
   addEventListener('scroll', () => { if (!bgOn) kick(); }, {passive:true});
   let rt, lw = 0, lh = 0;

@@ -95,12 +95,17 @@ A pedido, o site foi recriado com:
 ### 2.8 Vídeos incorporados (12/11/2026)
 Os vídeos agora tocam no próprio site, num player em tela cheia por cima da página (no estilo dos filmes da Apple), em vez de abrir o YouTube. Ele abre ao clicar nos cards da galeria, nas imagens dos produtos e nos botões "Assistir ao vídeo". Usa o modo de privacidade do YouTube (`youtube-nocookie.com`) e só carrega o vídeo quando a pessoa clica. Fecha com Esc, com o botão ou clicando fora. Tem link "Abrir no YouTube" (no computador), e Ctrl/Cmd+clique continua abrindo o YouTube numa aba nova. Os 8 vídeos permitem incorporação (conferido). Na prévia do Claude o player fica em branco, porque ela bloqueia vídeos incorporados; no site publicado funciona.
 
+### 2.9 Prévias em vídeo, nova ordem e setas (12/11/2026)
+- **Prévias em vídeo:** os vídeos `head-…` de 15 segundos da pasta Demo Videos foram comprimidos para a web (0,7 a 2,2 MB cada, sem áudio) e ficam em `video/`. O card do centro da galeria toca a sua prévia, e a galeria avança quando ela termina. Nos produtos, a prévia toca enquanto o card está visível. Os vídeos só baixam quando vão tocar. O botão do canto inferior esquerdo pausa tudo (galáxia, galeria e prévias). Não tocam para quem pede menos movimento nem com economia de dados ligada.
+- **Nova ordem dos produtos:** Soccer Tools, Wedding Tools, Whiteboard Universe, Essential Callouts, Universal Titles, Galactic Backdrops, Colorful Transitions, Cosmo Slice. Soccer Tools e Essential Callouts ocupam a largura toda.
+- **Setas laterais no carrossel** de destaques, que dão a volta do último para o primeiro.
+- **Sombra no título da abertura** (e mais leve no texto abaixo dele), para melhorar a leitura sobre a galáxia.
+
 ## 3. Pendências
 
 - [x] **Hostinger:** site novo publicado em motion-galaxy.com (conferido em 12/11/2026). Atualização automática ligada: cada envio ao branch `main` de `motiongalaxy/motion-galaxy-site` vai para o `public_html`. SSL ativo com redirecionamento para HTTPS, CDN e cache ligados. O `.htaccess` esconde `docs/`, `.claude/` e os `.md` (respondem 404).
 - [ ] Revisão das traduções por falantes nativos, principalmente o japonês.
 - [ ] Instagram e outras redes sociais: ainda não informados.
-- [ ] Vídeos curtos em loop nos cards dos produtos. Precisa de versões curtas dos vídeos (até 10 MB) no Drive, ou de liberar o download dos originais.
 - [ ] Opcional: preços dos produtos (não estavam no site antigo).
 
 ---
