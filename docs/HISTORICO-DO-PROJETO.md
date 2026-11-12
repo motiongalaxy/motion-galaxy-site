@@ -104,6 +104,9 @@ Os vídeos agora tocam no próprio site, num player em tela cheia por cima da p�
 ### 2.10 Sombras sobre o fundo (12/11/2026)
 Todos os elementos que ficam sobre a galáxia ganharam sombra. Os textos direto sobre o fundo (títulos de seção, frase grande, números da abertura, contato, links) receberam sombra de texto. Os cards de produto e da galeria têm a sombra mais funda, os cards de benefícios uma média, e os botões, seletor de idioma, controles da galeria, setas e o botão de pausa uma leve. Os valores ficam em tokens (`--sh-text`, `--sh-lg`, `--sh-md`, `--sh-sm`).
 
+### 2.11 Correção do carrossel (12/11/2026)
+No computador (provavelmente no Safari do Mac), o último vídeo do carrossel não chegava ao centro e ficava cortado na lateral. O Safari ignora o espaço extra no fim de listas roláveis, que era o que permitia centralizar o último card. Esse espaço passou a vir de elementos espaçadores reais, que funcionam igual em todos os navegadores. O carrossel também passou a calcular a posição de cada card pelo layout, então todos centralizam exatamente pelas setas, pelos pontinhos ou arrastando.
+
 ## 3. Pendências
 
 - [x] **Hostinger:** site novo publicado em motion-galaxy.com (conferido em 12/11/2026). Atualização automática ligada: cada envio ao branch `main` de `motiongalaxy/motion-galaxy-site` vai para o `public_html`. SSL ativo com redirecionamento para HTTPS, CDN e cache ligados. O `.htaccess` esconde `docs/`, `.claude/` e os `.md` (respondem 404).

@@ -188,7 +188,7 @@ section{scroll-margin-top:64px}
 .chan svg{width:20px;height:20px}
 
 /* ---------- Highlights gallery (auto-advancing) ---------- */
-.hwrap{position:relative;--card:min(84vw, 920px)}
+.hwrap{position:relative;container-type:inline-size;--card:min(84cqw, 920px);--hgap:clamp(12px,2vw,24px)}
 .hnav{
   position:absolute;z-index:3;top:50%;translate:0 -50%;
   width:56px;height:56px;border-radius:50%;cursor:pointer;
@@ -203,14 +203,15 @@ section{scroll-margin-top:64px}
 .hnav.prev{left:max(8px, calc((100% - var(--card)) / 2 - 80px))}
 .hnav.next{right:max(8px, calc((100% - var(--card)) / 2 - 80px))}
 .hrail{
-  display:grid;grid-auto-flow:column;grid-auto-columns:var(--card);gap:clamp(12px,2vw,24px);
+  position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:auto;gap:var(--hgap);
   overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;
-  padding-inline:calc((100% - var(--card)) / 2);padding-block:6px;
+  padding-block:6px;
   scrollbar-width:none;
 }
 .hrail::-webkit-scrollbar{display:none}
+.hspacer{display:block;width:max(0px, calc((100cqw - var(--card)) / 2 - var(--hgap)))}
 .hcard{
-  position:relative;display:block;scroll-snap-align:center;min-width:0;
+  position:relative;display:block;scroll-snap-align:center;min-width:0;width:var(--card);
   border-radius:var(--radius-tile);overflow:hidden;aspect-ratio:16/9;background:var(--tile-hi);
 }
 .hcard img{width:100%;height:100%;object-fit:cover}
@@ -391,7 +392,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   .nav-actions{margin-left:auto}
   .grid,.benefits{grid-template-columns:minmax(0,1fr)}
   .tile{--radius-tile:22px}
-  .hwrap{--card:88vw}
+  .hwrap{--card:88cqw}
   .hnav{width:44px;height:44px}
   .hcap .play{display:none}
   .foot-cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
@@ -900,7 +901,18 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   const saveData = !!(navigator.connection && navigator.connection.saveData);
   const previewsOn = () => bgOn && !playerOpen && !saveData && !document.hidden;
   let gIndex = 0, gUser = !reduce.matches, gInView = false, playerOpen = false, gKey = '';
-  const gStep = () => { const c = hrail.querySelector('.hcard'); return c ? c.getBoundingClientRect().width + parseFloat(getComputedStyle(hrail).columnGap || 0) : 1; };
+  /* Scroll position that centers card i, measured from the real layout */
+  const gTarget = i => {
+    const c = hrail.querySelectorAll('.hcard')[i]; if (!c) return 0;
+    /* offsetLeft/offsetWidth are layout values: not affected by the slide scale effect or by scrolling */
+    return Math.max(0, Math.min(hrail.scrollWidth - hrail.clientWidth, c.offsetLeft - (hrail.clientWidth - c.offsetWidth) / 2));
+  };
+  /* Index of the card closest to the center of the rail */
+  const gNearest = () => {
+    const mid = hrail.scrollLeft + hrail.clientWidth / 2; let best = 0, bd = Infinity;
+    hrail.querySelectorAll('.hcard').forEach((c, i) => { const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid); if (d < bd){ bd = d; best = i; } });
+    return best;
+  };
   function gSync(){
     [...dotsEl.children].forEach((d, i) => { d.classList.toggle('active', i === gIndex); d.setAttribute('aria-current', i === gIndex ? 'true' : 'false'); });
     const run = gUser && gInView && previewsOn();
@@ -923,7 +935,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   function gGo(i, smooth){
     gIndex = (i + PRODUCTS.length) % PRODUCTS.length;
     gLock = performance.now() + 900; /* our own scroll animation: don't let scroll events pull the index back */
-    hrail.scrollTo({left: gIndex * gStep(), behavior: smooth && !reduce.matches ? 'smooth' : 'auto'});
+    hrail.scrollTo({left: gTarget(gIndex), behavior: smooth && !reduce.matches ? 'smooth' : 'auto'});
     gSync();
   }
   dotsEl.innerHTML = PRODUCTS.map(p => `<button class="dot" type="button" aria-label="${esc(p.name)}"><i></i></button>`).join('');
@@ -953,7 +965,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   let gTick = false;
   hrail.addEventListener('scroll', () => {
     if (gTick) return; gTick = true;
-    requestAnimationFrame(() => { gTick = false; if (performance.now() < gLock) return; const i = Math.round(hrail.scrollLeft / gStep()); if (i !== gIndex && i >= 0 && i < PRODUCTS.length){ gIndex = i; gSync(); } });
+    requestAnimationFrame(() => { gTick = false; if (performance.now() < gLock) return; const i = gNearest(); if (i !== gIndex && i >= 0 && i < PRODUCTS.length){ gIndex = i; gSync(); } });
   }, {passive:true});
   hrail.addEventListener('keydown', e => { if (e.key === 'ArrowRight'){ e.preventDefault(); gGo(gIndex + 1, true); } else if (e.key === 'ArrowLeft'){ e.preventDefault(); gGo(gIndex - 1, true); } });
   new IntersectionObserver(es => { gInView = es[0].isIntersecting; gSync(); }, {threshold:.5}).observe(hrail);
@@ -976,13 +988,13 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     const n = Math.max(parts.length - 1, 1);
     document.getElementById('stmt').innerHTML = parts.map((w, i) => `<span style="--p:${(i / n).toFixed(3)}">${esc(w)}</span>`).join(lang === 'ja' ? '' : ' ');
 
-    hrail.innerHTML = PRODUCTS.map((p, i) => `
+    hrail.innerHTML = '<span class="hspacer" aria-hidden="true"></span>' + PRODUCTS.map((p, i) => `
       <a class="hcard" data-yt="${p.yt}" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
         <img src="img/${p.id}.webp" alt="" width="1280" height="720" ${i > 1 ? 'loading="lazy"' : ''} decoding="async">
         ${p.vid ? `<video class="pv" muted loop playsinline preload="none" aria-hidden="true" data-src="video/${p.id}.mp4"></video>` : ''}
         <span class="hcap"><span><b translate="no">${esc(p.name)}</b><small>${esc(copyOf(p).h)}</small></span><span class="play" aria-hidden="true">${ICON_PLAY}${t.play}</span></span>
-      </a>`).join('');
-    hrail.scrollLeft = gIndex * gStep();
+      </a>`).join('') + '<span class="hspacer" aria-hidden="true"></span>';
+    hrail.scrollLeft = gTarget(gIndex);
 
     document.getElementById('product-grid').innerHTML = PRODUCTS.map(p => {
       const c = copyOf(p);
@@ -1223,7 +1235,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     clearTimeout(rt);
     rt = setTimeout(() => {
       if (cv.clientWidth === lw && Math.abs(cv.clientHeight - lh) < 140) return;
-      lw = cv.clientWidth; lh = cv.clientHeight; build(); kick(); hrail.scrollLeft = gIndex * gStep();
+      lw = cv.clientWidth; lh = cv.clientHeight; build(); kick(); hrail.scrollLeft = gTarget(gIndex);
     }, 160);
   });
 
