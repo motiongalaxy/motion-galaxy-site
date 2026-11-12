@@ -101,6 +101,9 @@ Os vídeos agora tocam no próprio site, num player em tela cheia por cima da p�
 - **Setas laterais no carrossel** de destaques, que dão a volta do último para o primeiro.
 - **Sombra no título da abertura** (e mais leve no texto abaixo dele), para melhorar a leitura sobre a galáxia.
 
+### 2.10 Sombras sobre o fundo (12/11/2026)
+Todos os elementos que ficam sobre a galáxia ganharam sombra. Os textos direto sobre o fundo (títulos de seção, frase grande, números da abertura, contato, links) receberam sombra de texto. Os cards de produto e da galeria têm a sombra mais funda, os cards de benefícios uma média, e os botões, seletor de idioma, controles da galeria, setas e o botão de pausa uma leve. Os valores ficam em tokens (`--sh-text`, `--sh-lg`, `--sh-md`, `--sh-sm`).
+
 ## 3. Pendências
 
 - [x] **Hostinger:** site novo publicado em motion-galaxy.com (conferido em 12/11/2026). Atualização automática ligada: cada envio ao branch `main` de `motiongalaxy/motion-galaxy-site` vai para o `public_html`. SSL ativo com redirecionamento para HTTPS, CDN e cache ligados. O `.htaccess` esconde `docs/`, `.claude/` e os `.md` (respondem 404).
