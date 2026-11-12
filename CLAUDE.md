@@ -10,6 +10,7 @@ Full history of how this site was made, decisions and pending items: `docs/HISTO
 - `img/` — `logo.png` (white, inverted by CSS in light theme) and one 1280×720 WebP per product, named by product id (thumbnail of its YouTube demo).
 - `.htaccess` — hides `docs/`, `.claude/`, `.git/` and the `.md` files from the public website.
 - `.claude/skills/motion-galaxy-web-design/` — design & motion skill (14 guides by Emil Kowalski + Apple design). Use it for any visual/animation change.
+- `.claude/skills/web-design-guidelines/` — Vercel's Web Interface Guidelines review skill (rules pinned locally in `guidelines.md`). Use it to audit changes before committing. Its rule "Title Case for headings/buttons" does not apply: this site uses Apple-style sentence case.
 - `.claude/settings.json` — enables two plugins from `anthropics/claude-plugins-official`: `modern-web-guidance` (Google Chrome team; consult it before writing new HTML/CSS/JS so the code uses current web platform features) and `frontend-design` (Anthropic; UI/visual design quality). When a plugin's generic advice conflicts with this file or the motion-galaxy-web-design skill, this project's direction wins.
 - `docs/` — project history and a snapshot of the old WordPress homepage. Not part of the site.
 
