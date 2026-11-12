@@ -227,6 +227,43 @@ section{scroll-margin-top:64px}
   .dots.run .dot.active i::after{animation:fill 5s linear forwards}
 }
 
+/* ---------- Video player (native modal dialog) ---------- */
+#player{
+  width:min(1120px, calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 32px);
+  margin:auto;padding:0;border:0;border-radius:22px;overflow:hidden;
+  background:#000;color:var(--fg);box-shadow:0 30px 90px rgba(0,0,0,.7);
+}
+#player:modal{overscroll-behavior:contain}
+#player::backdrop{
+  background:rgba(0,0,0,.82);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  overflow:hidden;overscroll-behavior:contain;
+}
+.player-head{display:flex;align-items:center;gap:16px;padding:12px 12px 12px 22px;min-width:0}
+.player-head h2{font-size:1.0625rem;font-weight:600;letter-spacing:-.015em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-yt{font-size:.875rem;color:var(--accent);white-space:nowrap}
+.player-yt:hover{text-decoration:underline}
+.player-head form{margin:0}
+.player-close{
+  width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;flex-shrink:0;
+  background:var(--tile-hi);color:var(--fg);display:grid;place-items:center;
+  transition:transform .12s var(--ease-out), background-color .2s ease;
+}
+.player-close:hover{background:rgba(70,62,96,.95)}
+.player-close:active{transform:scale(.94)}
+.player-close svg{width:14px;height:14px}
+.player-frame{position:relative;aspect-ratio:16/9;max-height:calc(100dvh - 32px - 68px);width:100%;background:#000}
+.player-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+@media (prefers-reduced-motion: no-preference){
+  #player[open]{transition:opacity .25s ease, transform .35s var(--ease-out)}
+  #player[open]::backdrop{transition:opacity .25s ease}
+  @starting-style{
+    #player[open]{opacity:0;transform:scale(.96)}
+    #player[open]::backdrop{opacity:0}
+  }
+}
+@media (max-width: 760px){ .player-yt{display:none} #player{border-radius:16px} }
+
 /* ---------- Product tiles ---------- */
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .tile{
@@ -341,6 +378,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
 
 /* ---------- Accessibility preferences ---------- */
 @media (prefers-reduced-transparency: reduce){
+  #player::backdrop{background:#000;-webkit-backdrop-filter:none;backdrop-filter:none}
   .nav,.bg-toggle{background:#0b0a10;-webkit-backdrop-filter:none;backdrop-filter:none}
   .tile,.benefit{background:#121019}
   .play{background:#000;-webkit-backdrop-filter:none;backdrop-filter:none}
@@ -558,6 +596,15 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
 
 <button class="bg-toggle" id="bg-toggle" type="button" aria-label="Pause background animation"></button>
 
+<dialog id="player" closedby="any" aria-labelledby="player-title">
+  <div class="player-head">
+    <h2 id="player-title" translate="no"></h2>
+    <a class="player-yt" id="player-yt" href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener" data-i18n="ytOpen">Open on YouTube</a>
+    <form method="dialog"><button class="player-close" id="player-close" aria-label="Close" autofocus><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3 3 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></form>
+  </div>
+  <div class="player-frame" id="player-frame"></div>
+</dialog>
+
 <script>
 (function(){
   const PRODUCTS = [
@@ -589,6 +636,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
 
   const T = {
     pt:{
+      'close':'Fechar','ytOpen':'Abrir no YouTube',
       'stmt':'Oito pacotes de templates para o Final Cut Pro. Títulos, transições, fundos e efeitos que você arrasta para a timeline, personaliza em minutos e entrega com cara de estúdio.','hl.pause':'Pausar','hl.play':'Reproduzir','bg.pause':'Pausar animação do fundo','bg.play':'Reproduzir animação do fundo',
       'nav.products':'Produtos','nav.videos':'Vídeos','nav.why':'Vantagens','nav.buy':'Comprar',
       'hero.eyebrow':'Templates para Final Cut Pro','hero.title':'Seus vídeos em outra órbita.',
@@ -609,6 +657,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       prev:'Anterior', next:'Próximo', langLabel:'Idioma', sections:'Seções', videos:'Vídeos'
     },
     en:{
+      'close':'Close','ytOpen':'Open on YouTube',
       'stmt':'Eight packs of templates for Final Cut Pro. Titles, transitions, backgrounds and effects that you drop on the timeline, customize in minutes and deliver looking like a studio made them.','hl.pause':'Pause','hl.play':'Play','bg.pause':'Pause background animation','bg.play':'Play background animation',
       'nav.products':'Products','nav.videos':'Videos','nav.why':'Why us','nav.buy':'Buy',
       'hero.eyebrow':'Templates for Final Cut Pro','hero.title':'Your videos, in another orbit.',
@@ -629,6 +678,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       prev:'Previous', next:'Next', langLabel:'Language', sections:'Sections', videos:'Videos'
     },
     es:{
+      'close':'Cerrar','ytOpen':'Abrir en YouTube',
       'stmt':'Ocho paquetes de plantillas para Final Cut Pro. Títulos, transiciones, fondos y efectos que arrastras a la línea de tiempo, personalizas en minutos y entregas con acabado de estudio.','hl.pause':'Pausar','hl.play':'Reproducir','bg.pause':'Pausar animación del fondo','bg.play':'Reproducir animación del fondo',
       'nav.products':'Productos','nav.videos':'Vídeos','nav.why':'Ventajas','nav.buy':'Comprar','nav.contact':'Contacto',
       'hero.eyebrow':'Plantillas para Final Cut Pro','hero.title':'Tus vídeos, en otra órbita.',
@@ -650,6 +700,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       prev:'Anterior', next:'Siguiente', langLabel:'Idioma', sections:'Secciones', videos:'Vídeos'
     },
     fr:{
+      'close':'Fermer','ytOpen':'Ouvrir sur YouTube',
       'stmt':'Huit packs de modèles pour Final Cut Pro. Des titres, transitions, arrière-plans et effets à glisser dans la timeline, à personnaliser en quelques minutes et à livrer avec une finition de studio.','hl.pause':'Pause','hl.play':'Lecture','bg.pause':'Mettre en pause l’animation du fond','bg.play':'Lancer l’animation du fond',
       'nav.products':'Produits','nav.videos':'Vidéos','nav.why':'Avantages','nav.buy':'Acheter','nav.contact':'Contact',
       'hero.eyebrow':'Modèles pour Final Cut Pro','hero.title':'Vos vidéos, sur une autre orbite.',
@@ -671,6 +722,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       prev:'Précédent', next:'Suivant', langLabel:'Langue', sections:'Sections', videos:'Vidéos'
     },
     de:{
+      'close':'Schließen','ytOpen':'Auf YouTube öffnen',
       'stmt':'Acht Vorlagenpakete für Final Cut Pro. Titel, Übergänge, Hintergründe und Effekte, die du in die Timeline ziehst, in Minuten anpasst und in Studioqualität ablieferst.','hl.pause':'Pause','hl.play':'Wiedergabe','bg.pause':'Hintergrundanimation pausieren','bg.play':'Hintergrundanimation abspielen',
       'nav.products':'Produkte','nav.videos':'Videos','nav.why':'Vorteile','nav.buy':'Kaufen','nav.contact':'Kontakt',
       'hero.eyebrow':'Vorlagen für Final Cut Pro','hero.title':'Deine Videos in einer neuen Umlaufbahn.',
@@ -692,6 +744,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       prev:'Zurück', next:'Weiter', langLabel:'Sprache', sections:'Bereiche', videos:'Videos'
     },
     it:{
+      'close':'Chiudi','ytOpen':'Apri su YouTube',
       'stmt':'Otto pacchetti di template per Final Cut Pro. Titoli, transizioni, sfondi ed effetti da trascinare nella timeline, personalizzare in pochi minuti e consegnare con una finitura da studio.','hl.pause':'Pausa','hl.play':'Riproduci','bg.pause':'Metti in pausa l’animazione di sfondo','bg.play':'Avvia l’animazione di sfondo',
       'nav.products':'Prodotti','nav.videos':'Video','nav.why':'Vantaggi','nav.buy':'Acquista','nav.contact':'Contatti',
       'hero.eyebrow':'Template per Final Cut Pro','hero.title':'I tuoi video, in un’altra orbita.',
@@ -713,6 +766,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
       prev:'Precedente', next:'Successivo', langLabel:'Lingua', sections:'Sezioni', videos:'Video'
     },
     ja:{
+      'close':'閉じる','ytOpen':'YouTubeで開く',
       'stmt':'Final Cut Pro用の8つのテンプレートパック。タイトル、トランジション、背景、エフェクトをタイムラインにドラッグして数分でカスタマイズ。スタジオ品質の仕上がりで届けられます。','hl.pause':'一時停止','hl.play':'再生','bg.pause':'背景アニメーションを一時停止','bg.play':'背景アニメーションを再生',
       'nav.products':'製品','nav.videos':'ビデオ','nav.why':'特長','nav.buy':'購入','nav.contact':'お問い合わせ',
       'hero.eyebrow':'Final Cut Pro用テンプレート','hero.title':'あなたの映像を、新しい軌道へ。',
@@ -808,11 +862,11 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
   const copyOf = p => p[lang] || {h: PX[lang][p.id][0], d: PX[lang][p.id][1]};
 
   /* ---------- Highlights gallery state ---------- */
-  let gIndex = 0, gUser = !reduce.matches, gInView = false;
+  let gIndex = 0, gUser = !reduce.matches, gInView = false, playerOpen = false;
   const gStep = () => { const c = hrail.querySelector('.hcard'); return c ? c.getBoundingClientRect().width + parseFloat(getComputedStyle(hrail).columnGap || 0) : 1; };
   function gSync(){
     [...dotsEl.children].forEach((d, i) => { d.classList.toggle('active', i === gIndex); d.setAttribute('aria-current', i === gIndex ? 'true' : 'false'); });
-    dotsEl.classList.toggle('run', gUser && gInView);
+    dotsEl.classList.toggle('run', gUser && gInView && !playerOpen);
     gplay.innerHTML = gUser ? ICON_PAUSE_SM : ICON_PLAY_SM;
     gplay.setAttribute('aria-label', gUser ? T[lang]['hl.pause'] : T[lang]['hl.play']);
   }
@@ -852,7 +906,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     document.getElementById('stmt').innerHTML = parts.map((w, i) => `<span style="--p:${(i / n).toFixed(3)}">${esc(w)}</span>`).join(lang === 'ja' ? '' : ' ');
 
     hrail.innerHTML = PRODUCTS.map((p, i) => `
-      <a class="hcard" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
+      <a class="hcard" data-yt="${p.yt}" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
         <img src="img/${p.id}.webp" alt="" width="1280" height="720" ${i > 1 ? 'loading="lazy"' : ''} decoding="async">
         <span class="hcap"><span><b translate="no">${esc(p.name)}</b><small>${esc(copyOf(p).h)}</small></span><span class="play" aria-hidden="true">${ICON_PLAY}${t.play}</span></span>
       </a>`).join('');
@@ -866,9 +920,9 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
         <p class="desc">${esc(c.d)}</p>
         <div class="ctas">
           <a class="btn btn-primary" href="${fxUrl(p)}" target="_blank" rel="noopener">${t.buy}</a>
-          <a class="btn btn-ghost" href="${ytUrl(p)}" target="_blank" rel="noopener">${ICON_PLAY_SM}${t.watch}</a>
+          <a class="btn btn-ghost" data-yt="${p.yt}" href="${ytUrl(p)}" target="_blank" rel="noopener">${ICON_PLAY_SM}${t.watch}</a>
         </div>
-        <a class="media" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
+        <a class="media" data-yt="${p.yt}" href="${ytUrl(p)}" target="_blank" rel="noopener" aria-label="${esc(t.watch + ': ' + p.name)}">
           <img src="img/${p.id}.webp" alt="${esc(p.name)}" width="1280" height="720" loading="lazy" decoding="async">
           <span class="play" aria-hidden="true">${ICON_PLAY}${t.play}</span>
         </a>
@@ -877,6 +931,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
 
     document.getElementById('foot-buy').innerHTML = PRODUCTS.map(p => `<li><a href="${fxUrl(p)}" target="_blank" rel="noopener">${esc(p.name)}</a></li>`).join('');
     document.getElementById('foot-watch').innerHTML = `<li><a href="https://www.youtube.com/@motion-galaxy" target="_blank" rel="noopener"><b>${t['foot.channel']}</b></a></li>` + PRODUCTS.map(p => `<li><a href="${ytUrl(p)}" target="_blank" rel="noopener" translate="no">${esc(p.name)}</a></li>`).join('');
+    document.getElementById('player-close').setAttribute('aria-label', t.close);
     gSync();
     bgSync();
   }
@@ -900,6 +955,42 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     else if (e.key === 'Tab'){ closeMenu(false); }
   });
   document.addEventListener('pointerdown', e => { if (!e.target.closest('.lang-wrap')) closeMenu(false); });
+
+  /* ---------- Video player: YouTube (privacy-enhanced) in a native modal dialog ---------- */
+  const player = document.getElementById('player');
+  const pFrame = document.getElementById('player-frame');
+  function openPlayer(id){
+    const p = PRODUCTS.find(x => x.yt === id); if (!p) return false;
+    document.getElementById('player-title').textContent = p.name;
+    document.getElementById('player-yt').href = ytUrl(p);
+    const f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0&playsinline=1';
+    f.title = p.name;
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen = true;
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    pFrame.replaceChildren(f);
+    playerOpen = true; gSync();
+    player.showModal();
+    return true;
+  }
+  player.addEventListener('close', () => { pFrame.replaceChildren(); playerOpen = false; gSync(); kick(); });
+  /* Light dismiss where closedby is not supported (Safari) */
+  if (!('closedBy' in HTMLDialogElement.prototype)){
+    player.addEventListener('click', e => {
+      if (e.target !== player) return;
+      const r = player.getBoundingClientRect();
+      if (r.top <= e.clientY && e.clientY <= r.bottom && r.left <= e.clientX && e.clientX <= r.right) return;
+      player.close();
+    });
+  }
+  /* Plain clicks open the player; Cmd/Ctrl/middle click still open YouTube in a new tab */
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[data-yt]');
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (typeof player.showModal !== 'function') return;
+    if (openPlayer(a.dataset.yt)) e.preventDefault();
+  });
 
   /* ---------- Copy e-mail ---------- */
   const copyBtn = document.getElementById('copy-mail');
@@ -1039,7 +1130,7 @@ footer .wrap{padding-block:40px 32px;display:grid;gap:28px}
     /* Dim the sky as the reader moves into the content */
     g.globalAlpha = 0.04 + prog * 0.44; g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
 
-    raf = bgOn && !document.hidden ? requestAnimationFrame(frame) : 0;
+    raf = bgOn && !document.hidden && !playerOpen ? requestAnimationFrame(frame) : 0;
   }
   function kick(){ if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
   function bgSync(){

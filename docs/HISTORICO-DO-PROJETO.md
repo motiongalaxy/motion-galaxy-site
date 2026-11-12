@@ -92,6 +92,9 @@ A pedido, o site foi recriado com:
 - A seção de vídeos virou a galeria de destaques e subiu para antes dos produtos.
 - Os efeitos de rolagem usam um recurso recente dos navegadores (animações ligadas à rolagem em CSS). Em navegadores antigos o site aparece completo, só sem esses efeitos.
 
+### 2.8 Vídeos incorporados (12/11/2026)
+Os vídeos agora tocam no próprio site, num player em tela cheia por cima da página (no estilo dos filmes da Apple), em vez de abrir o YouTube. Ele abre ao clicar nos cards da galeria, nas imagens dos produtos e nos botões "Assistir ao vídeo". Usa o modo de privacidade do YouTube (`youtube-nocookie.com`) e só carrega o vídeo quando a pessoa clica. Fecha com Esc, com o botão ou clicando fora. Tem link "Abrir no YouTube" (no computador), e Ctrl/Cmd+clique continua abrindo o YouTube numa aba nova. Os 8 vídeos permitem incorporação (conferido). Na prévia do Claude o player fica em branco, porque ela bloqueia vídeos incorporados; no site publicado funciona.
+
 ## 3. Pendências
 
 - [x] **Hostinger:** site novo publicado em motion-galaxy.com (conferido em 12/11/2026). Atualização automática ligada: cada envio ao branch `main` de `motiongalaxy/motion-galaxy-site` vai para o `public_html`. SSL ativo com redirecionamento para HTTPS, CDN e cache ligados. O `.htaccess` esconde `docs/`, `.claude/` e os `.md` (respondem 404).
