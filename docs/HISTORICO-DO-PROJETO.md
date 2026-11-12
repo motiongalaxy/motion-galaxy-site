@@ -46,6 +46,7 @@ Backup da conversa com o Claude (Claude Code na nuvem) em **6 de novembro de 202
 - As 14 foram juntadas numa skill só, **motion-galaxy-web-design**: um `SKILL.md` que indica qual guia usar em cada situação, mais `guides/<nome>/GUIDE.md`. Ela está neste repositório em `.claude/skills/motion-galaxy-web-design/` e o Claude a carrega sozinho quando abre o repositório.
 - Para usar a skill em qualquer conversa do claude.ai: compacte a pasta `motion-galaxy-web-design` em zip e envie em Settings → Capabilities → Skills.
 - **11/11/2026:** foi adicionado o plugin **modern-web-guidance** (do time do Google Chrome, catálogo `anthropics/claude-plugins-official`), com boas práticas atuais de HTML, CSS e JavaScript. Ele está ativado no repositório em `.claude/settings.json`, então toda sessão do Claude aberta com este repositório já vem com ele. No computador: `claude plugin marketplace update claude-plugins-official` e depois `claude plugin install modern-web-guidance@claude-plugins-official`.
+- **12/11/2026:** foi adicionado o plugin **frontend-design** da Anthropic (mesmo catálogo), com orientações de qualidade visual para interfaces. Ele também está ativado em `.claude/settings.json`. No computador: `claude plugin install frontend-design@claude-plugins-official`.
 
 ### 2.3 O novo site
 Feito no estilo do site da Apple, com a skill acima:
