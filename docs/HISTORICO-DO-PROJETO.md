@@ -94,7 +94,7 @@ A pedido, o site foi recriado com:
 
 ## 3. Pendências
 
-- [ ] **Hostinger:** fazer backup do WordPress, esvaziar o `public_html`, conectar o Git (hPanel → Sites → Gerenciar → Avançado → Git, repositório deste projeto, branch `main`, diretório em branco), clicar em Deploy, ativar o Auto Deployment e colar o webhook no GitHub (Settings → Webhooks).
+- [x] **Hostinger:** site novo publicado em motion-galaxy.com (conferido em 12/11/2026). Atualização automática ligada: cada envio ao branch `main` de `motiongalaxy/motion-galaxy-site` vai para o `public_html`. SSL ativo com redirecionamento para HTTPS, CDN e cache ligados. O `.htaccess` esconde `docs/`, `.claude/` e os `.md` (respondem 404).
 - [ ] Revisão das traduções por falantes nativos, principalmente o japonês.
 - [ ] Instagram e outras redes sociais: ainda não informados.
 - [ ] Vídeos curtos em loop nos cards dos produtos. Precisa de versões curtas dos vídeos (até 10 MB) no Drive, ou de liberar o download dos originais.
