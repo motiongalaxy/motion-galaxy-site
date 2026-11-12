@@ -7,7 +7,9 @@ Full history of how this site was made, decisions and pending items: `docs/HISTO
 ## Structure
 
 - `index.html` — the whole site (HTML + inline CSS + inline JS). No build step, no framework.
-- `img/` — `logo.png` (white, inverted by CSS in light theme) and one 1280×720 WebP per product, named by product id (thumbnail of its YouTube demo).
+- `img/` — one 1280×720 WebP per product, named by product id (thumbnail of its YouTube demo); `hero-galaxy-960/1920.webp` (hero background: Hubble photo of NGC 2336, ESA/Hubble & NASA, CC BY 4.0, credited in the footer); `favicon.png`, `apple-touch-icon.png`.
+- Logo: inline SVG `<symbol id="mg-logo">` at the top of `<body>`, from the vector `Motion Galaxy.ai` (fill `currentColor`, so it follows the theme). Reuse it with `<svg class="logo"><use href="#mg-logo"/></svg>`.
+- Brand fonts (Nasalization, Ethnocentric, Typodermic desktop EULA) must NOT be embedded as web fonts: the EULA forbids distributing the font files. The logo already carries them as outlines.
 - `.htaccess` — hides `docs/`, `.claude/`, `.git/` and the `.md` files from the public website.
 - `.claude/skills/motion-galaxy-web-design/` — design & motion skill (14 guides by Emil Kowalski + Apple design). Use it for any visual/animation change.
 - `.claude/skills/web-design-guidelines/` — Vercel's Web Interface Guidelines review skill (rules pinned locally in `guidelines.md`). Use it to audit changes before committing. Its rule "Title Case for headings/buttons" does not apply: this site uses Apple-style sentence case.
@@ -27,7 +29,7 @@ Full history of how this site was made, decisions and pending items: `docs/HISTO
 - Every new text must be added to **all 7 languages** (`T` and, for products, `pt`/`en` + `PX`). Keep English as default.
 - Adding a product: add to `PRODUCTS`, add its copy to `PX` for es/fr/de/it/ja, add `img/<id>.webp` (1280×720, quality ~72). Keep the grid filled: featured tiles span the full row, others go in pairs.
 - Links: buy → FxFactory product page; video → YouTube watch URL; channel → https://www.youtube.com/@motion-galaxy; e-mail → motiongalaxy.templates@gmail.com.
-- Keep the Apple-style direction (see the skill): system font, tight tracking on big type, translucent sticky nav, restrained motion (only the hero entrance animates), respect `prefers-reduced-motion`, `prefers-reduced-transparency`, `prefers-contrast`.
+- Keep the Apple-style direction (see the skill): system font, tight tracking on big type, translucent sticky nav, restrained motion (only the hero entrance animates). The hero is always a dark night-sky band (its own token overrides on `.hero`), in both themes, respect `prefers-reduced-motion`, `prefers-reduced-transparency`, `prefers-contrast`.
 - Don't use Apple logos or claim Apple endorsement; the footer trademark line stays.
 - Before committing: syntax-check the inline script and test at 390px and 1280px wide (no horizontal scroll, no console errors).
 

@@ -76,12 +76,22 @@ Na rede do ambiente "Default" do Claude na nuvem foram liberados: `motion-galaxy
 
 ---
 
+### 2.6 Melhorias com o material do Google Drive (12/11/2026)
+Material lido da pasta **Motion Galaxy - Backup** (Drive da conta motiongalaxy.templates, compartilhada com a conta pessoal):
+- **Logo vetorial:** convertido de `_LOGO/PNG/Motion Galaxy.ai` para SVG, embutido no `index.html`. Fica nítido em qualquer tela e muda de cor conforme o tema, sem o filtro de inversão de antes.
+- **Abertura com galáxia real:** `Site/galaxy1.jpg` (NGC 2336, Hubble, ESA/Hubble & NASA, CC BY 4.0), clareada e otimizada em WebP de 960 e 1920 px, no lugar das estrelas desenhadas. A abertura fica sempre escura, nos dois temas. O crédito está no rodapé, nos 7 idiomas.
+- **Textos mais completos** do Whiteboard Universe e do Cosmo Slice, a partir dos roteiros "First Look" da FxFactory.
+- **Favicon** com o "G" da marca.
+- **Fontes da marca (Nasalization e Ethnocentric):** não foram usadas no site, porque a licença Typodermic não permite distribuir os arquivos de fonte, e uma fonte de site é baixada por cada visitante.
+- **Vídeos em loop nos produtos:** ainda não feitos. O conector do Drive só baixa arquivos de até 10 MB, e os vídeos têm de 27 a 658 MB.
+
 ## 3. Pendências
 
 - [ ] **Hostinger:** fazer backup do WordPress, esvaziar o `public_html`, conectar o Git (hPanel → Sites → Gerenciar → Avançado → Git, repositório deste projeto, branch `main`, diretório em branco), clicar em Deploy, ativar o Auto Deployment e colar o webhook no GitHub (Settings → Webhooks).
 - [ ] Revisão das traduções por falantes nativos, principalmente o japonês.
 - [ ] Instagram e outras redes sociais: ainda não informados.
-- [ ] Opcional: com o site no próprio servidor, dá para trocar o link do YouTube por vídeo tocando na própria página. Na prévia do Claude isso não é permitido.
+- [ ] Vídeos curtos em loop nos cards dos produtos. Precisa de versões curtas dos vídeos (até 10 MB) no Drive, ou de liberar o download dos originais.
+- [ ] Confirmar a linha de crédito exata da foto da galáxia no site do ESA/Hubble.
 - [ ] Opcional: preços dos produtos (não estavam no site antigo).
 
 ---
